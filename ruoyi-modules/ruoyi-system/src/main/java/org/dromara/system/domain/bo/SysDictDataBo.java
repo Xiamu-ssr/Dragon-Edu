@@ -45,6 +45,12 @@ public class SysDictDataBo extends BaseEntity {
     private String dictValue;
 
     /**
+     * 枚举常量
+     */
+    @Size(min = 0, max = 100, message = "枚举常量长度不能超过{max}个字符")
+    private String dictEng;
+
+    /**
      * 字典类型
      */
     @NotBlank(message = "字典类型不能为空")

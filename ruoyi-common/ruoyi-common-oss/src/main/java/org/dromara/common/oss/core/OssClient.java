@@ -116,9 +116,39 @@ public class OssClient {
         return UploadResult.builder().url(getUrl() + "/" + path).filename(path).build();
     }
 
+    public UploadResult upload(InputStream inputStream, String path, String contentType, String bucketName) {
+        if (!(inputStream instanceof ByteArrayInputStream)) {
+            inputStream = new ByteArrayInputStream(IoUtil.readBytes(inputStream));
+        }
+        try {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(contentType);
+            metadata.setContentLength(inputStream.available());
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, path, inputStream, metadata);
+            // 设置上传对象的 Acl 为公共读
+            putObjectRequest.setCannedAcl(getAccessPolicy().getAcl());
+            client.putObject(putObjectRequest);
+        } catch (Exception e) {
+            throw new OssException("上传文件失败，请检查配置信息:[" + e.getMessage() + "]");
+        }
+        return UploadResult.builder().url(getUrl() + "/" + path).filename(path).build();
+    }
+
     public UploadResult upload(File file, String path) {
         try {
             PutObjectRequest putObjectRequest = new PutObjectRequest(properties.getBucketName(), path, file);
+            // 设置上传对象的 Acl 为公共读
+            putObjectRequest.setCannedAcl(getAccessPolicy().getAcl());
+            client.putObject(putObjectRequest);
+        } catch (Exception e) {
+            throw new OssException("上传文件失败，请检查配置信息:[" + e.getMessage() + "]");
+        }
+        return UploadResult.builder().url(getUrl() + "/" + path).filename(path).build();
+    }
+
+    public UploadResult upload(File file, String path, String bucketName) {
+        try {
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, path, file);
             // 设置上传对象的 Acl 为公共读
             putObjectRequest.setCannedAcl(getAccessPolicy().getAcl());
             client.putObject(putObjectRequest);
@@ -132,6 +162,15 @@ public class OssClient {
         path = path.replace(getUrl() + "/", "");
         try {
             client.deleteObject(properties.getBucketName(), path);
+        } catch (Exception e) {
+            throw new OssException("删除文件失败，请检查配置信息:[" + e.getMessage() + "]");
+        }
+    }
+
+    public void delete(String path, String bucketName) {
+        path = path.replace(getUrl() + "/", "");
+        try {
+            client.deleteObject(bucketName, path);
         } catch (Exception e) {
             throw new OssException("删除文件失败，请检查配置信息:[" + e.getMessage() + "]");
         }
@@ -163,6 +202,12 @@ public class OssClient {
     public InputStream getObjectContent(String path) {
         path = path.replace(getUrl() + "/", "");
         S3Object object = client.getObject(properties.getBucketName(), path);
+        return object.getObjectContent();
+    }
+
+    public InputStream getObjectContent(String bucketName, String path) {
+        path = path.replace(getUrl() + "/", "");
+        S3Object object = client.getObject(bucketName, path);
         return object.getObjectContent();
     }
 
@@ -257,6 +302,22 @@ public class OssClient {
         builder.append(bucketName);
         builder.append("/*\"\n}\n],\n\"Version\": \"2012-10-17\"\n}\n");
         return builder.toString();
+    }
+
+    /**
+     * 检查指定路径的文件是否存在于给定的存储桶中。
+     *
+     * @param bucketName 存储桶名称。
+     * @param path 文件路径，即对象的键。
+     * @return 文件是否存在。
+     */
+    public boolean doesFileExist(String bucketName, String path) {
+        try {
+            // 使用Amazon S3客户端检查对象是否存在
+            return client.doesObjectExist(bucketName, path);
+        } catch (Exception e) {
+            throw new OssException("检查文件是否存在时发生错误: [" + e.getMessage() + "]");
+        }
     }
 
 }

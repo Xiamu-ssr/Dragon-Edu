@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dromara.course.mapper.CourseCategoryMapper">
+
+    <resultMap type="org.dromara.course.domain.vo.CourseCategoryVo" id="SysCategoryResult">
+    </resultMap>
+
+    <select id="selectCategoryList" resultMap="SysCategoryResult">
+        select * from course_category ${ew.getCustomSqlSegment}
+    </select>
+
+</mapper>

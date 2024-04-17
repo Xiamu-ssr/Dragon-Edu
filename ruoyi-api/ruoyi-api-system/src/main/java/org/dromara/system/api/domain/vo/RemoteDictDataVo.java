@@ -39,6 +39,11 @@ public class RemoteDictDataVo implements Serializable {
     private String dictValue;
 
     /**
+     * 枚举常量
+     */
+    private String dictEng;
+
+    /**
      * 字典类型
      */
     private String dictType;

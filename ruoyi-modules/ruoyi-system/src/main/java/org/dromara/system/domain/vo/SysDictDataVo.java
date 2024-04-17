@@ -51,6 +51,12 @@ public class SysDictDataVo implements Serializable {
     private String dictValue;
 
     /**
+     * 枚举常量
+     */
+    @ExcelProperty(value = "枚举常量")
+    private String dictEng;
+
+    /**
      * 字典类型
      */
     @ExcelProperty(value = "字典类型")

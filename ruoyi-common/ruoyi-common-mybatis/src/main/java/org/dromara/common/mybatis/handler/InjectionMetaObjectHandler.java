@@ -10,6 +10,7 @@ import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.system.api.model.LoginUser;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -40,6 +41,9 @@ public class InjectionMetaObjectHandler implements MetaObjectHandler {
                     baseEntity.setCreateDept(ObjectUtil.isNotNull(baseEntity.getCreateDept())
                         ? baseEntity.getCreateDept() : loginUser.getDeptId());
                 }
+            }else {
+                this.strictInsertFill(metaObject, "createTime", LocalDateTime.class, LocalDateTime.now());
+                this.strictInsertFill(metaObject, "updateTime", LocalDateTime.class, LocalDateTime.now());
             }
         } catch (Exception e) {
             throw new ServiceException("自动注入异常 => " + e.getMessage(), HttpStatus.HTTP_UNAUTHORIZED);
@@ -59,6 +63,8 @@ public class InjectionMetaObjectHandler implements MetaObjectHandler {
                 if (ObjectUtil.isNotNull(loginUser)) {
                     baseEntity.setUpdateBy(loginUser.getUserId());
                 }
+            }else {
+                this.strictInsertFill(metaObject, "updateTime", LocalDateTime.class, LocalDateTime.now());
             }
         } catch (Exception e) {
             throw new ServiceException("自动注入异常 => " + e.getMessage(), HttpStatus.HTTP_UNAUTHORIZED);

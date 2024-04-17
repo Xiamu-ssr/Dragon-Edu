@@ -12,6 +12,7 @@ import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.system.domain.bo.SysDictDataBo;
 import org.dromara.system.domain.vo.SysDictDataVo;
+import org.dromara.system.domain.vo.SysDictEnumVo;
 import org.dromara.system.service.ISysDictDataService;
 import org.dromara.system.service.ISysDictTypeService;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据字典信息
@@ -114,4 +116,12 @@ public class SysDictDataController extends BaseController {
         dictDataService.deleteDictDataByIds(dictCodes);
         return R.ok();
     }
+
+    @SaCheckPermission("system:dict:enum")
+    @GetMapping("/enum")
+    public R<List<SysDictEnumVo>> generateEnum(@RequestParam("dictType") String dictType) {
+        List<SysDictEnumVo> res = dictDataService.generateEnum(dictType);
+        return R.ok(res);
+    }
+
 }

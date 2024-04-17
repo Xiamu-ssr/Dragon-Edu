@@ -111,6 +111,14 @@
             <artifactId>ruoyi-api-resource</artifactId>
         </dependency>
 
+        <!--用于将数据字典生成enum类-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-freemarker</artifactId>
+        </dependency>
+
+
+
     </dependencies>
 
     <build>

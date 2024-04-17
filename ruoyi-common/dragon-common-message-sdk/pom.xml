@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.dromara</groupId>
+        <artifactId>ruoyi-common</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>dragon-common-message-sdk</artifactId>
+
+    <description>
+        dragon-common-message-sdk 任务流多阶段sdk
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-job</artifactId>
+        </dependency>
+        <!--<dependency>-->
+        <!--    <groupId>org.springframework.cloud</groupId>-->
+        <!--    <artifactId>spring-cloud-starter-bootstrap</artifactId>-->
+        <!--</dependency>-->
+
+        <!-- mybatis plus的依赖 -->
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mybatis</groupId>
+                    <artifactId>mybatis-spring</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Mysql Connector -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.squareup.okhttp3</groupId>-->
+<!--            <artifactId>okhttp</artifactId>-->
+<!--            <version>4.8.1</version>-->
+<!--        </dependency>-->
+
+    </dependencies>
+
+</project>

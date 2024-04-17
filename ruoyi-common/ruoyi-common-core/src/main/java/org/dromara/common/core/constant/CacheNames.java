@@ -65,4 +65,9 @@ public interface CacheNames {
      */
     String ONLINE_TOKEN = "online_tokens";
 
+    /**
+     * 热门课程
+     */
+    String COURSE_HOT = "course_hot";
+
 }

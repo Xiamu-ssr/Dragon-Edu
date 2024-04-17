@@ -365,6 +365,17 @@ public class RedisUtils {
     }
 
     /**
+     * 获取Map大小
+     *
+     * @param key 缓存的键值
+     * @return int
+     */
+    public static int getMapSize(String key) {
+        RMap<String, Object> map = CLIENT.getMap(key);
+        return map.size();  // 返回 map 中的键值对数量
+    }
+
+    /**
      * 注册Map监听器
      * <p>
      * key 监听器需开启 `notify-keyspace-events` 等 redis 相关配置
@@ -421,6 +432,19 @@ public class RedisUtils {
     public static <T> T getCacheMapValue(final String key, final String hKey) {
         RMap<String, T> rMap = CLIENT.getMap(key);
         return rMap.get(hKey);
+    }
+
+    /**
+     * 获取缓存映射值
+     * 获取Hash中的多个数据
+     *
+     * @param key   Redis键
+     * @param hKeys h键
+     * @return Hash中的对象
+     */
+    public static <T> Map<String, T> getCacheMapValues(final String key, final Set<String> hKeys) {
+        RMap<String, T> rMap = CLIENT.getMap(key);
+        return rMap.getAll(hKeys);
     }
 
     /**

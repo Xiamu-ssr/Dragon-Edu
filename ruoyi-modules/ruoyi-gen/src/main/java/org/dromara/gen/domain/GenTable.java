@@ -135,6 +135,11 @@ public class GenTable extends BaseEntity {
     private String remark;
 
     /**
+     模版选择，0表示默认，1表示自定义
+     */
+    private boolean templateChoose;
+
+    /**
      * 树编码字段
      */
     @TableField(exist = false)

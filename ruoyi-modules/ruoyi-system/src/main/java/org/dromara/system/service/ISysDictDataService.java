@@ -4,8 +4,10 @@ import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.system.domain.bo.SysDictDataBo;
 import org.dromara.system.domain.vo.SysDictDataVo;
+import org.dromara.system.domain.vo.SysDictEnumVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 字典 业务层
@@ -64,4 +66,6 @@ public interface ISysDictDataService {
      * @return 结果
      */
     List<SysDictDataVo> updateDictData(SysDictDataBo bo);
+
+    List<SysDictEnumVo> generateEnum(String dictType);
 }

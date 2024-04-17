@@ -108,15 +108,15 @@ public class VelocityUtils {
      *
      * @return 模板列表
      */
-    public static List<String> getTemplateList(String tplCategory) {
+    public static List<String> getTemplateList(String tplCategory, boolean yes) {
         List<String> templates = new ArrayList<>();
-        templates.add("vm/java/domain.java.vm");
-        templates.add("vm/java/vo.java.vm");
-        templates.add("vm/java/bo.java.vm");
-        templates.add("vm/java/mapper.java.vm");
-        templates.add("vm/java/service.java.vm");
-        templates.add("vm/java/serviceImpl.java.vm");
-        templates.add("vm/java/controller.java.vm");
+        templates.add( yes ? "vm/java/1-domain.java.vm" : "vm/java/domain.java.vm");
+        templates.add( yes ? "vm/java/1-vo.java.vm" : "vm/java/vo.java.vm");
+        templates.add( yes ? "vm/java/1-bo.java.vm" : "vm/java/bo.java.vm");
+        templates.add( yes ? "vm/java/1-mapper.java.vm" : "vm/java/mapper.java.vm");
+        templates.add( yes ? "vm/java/1-service.java.vm" : "vm/java/service.java.vm");
+        templates.add( yes ? "vm/java/1-serviceImpl.java.vm" : "vm/java/serviceImpl.java.vm");
+        templates.add( yes ? "vm/java/1-controller.java.vm" : "vm/java/controller.java.vm");
         templates.add("vm/xml/mapper.xml.vm");
         if (DataBaseHelper.isOracle()) {
             templates.add("vm/sql/oracle/sql.vm");
@@ -166,7 +166,11 @@ public class VelocityUtils {
         if (template.contains("mapper.java.vm")) {
             fileName = StringUtils.format("{}/mapper/{}Mapper.java", javaPath, className);
         } else if (template.contains("service.java.vm")) {
-            fileName = StringUtils.format("{}/service/I{}Service.java", javaPath, className);
+            if (genTable.isTemplateChoose()){
+                fileName = StringUtils.format("{}/service/{}Service.java", javaPath, className);
+            }else {
+                fileName = StringUtils.format("{}/service/I{}Service.java", javaPath, className);
+            }
         } else if (template.contains("serviceImpl.java.vm")) {
             fileName = StringUtils.format("{}/service/impl/{}ServiceImpl.java", javaPath, className);
         } else if (template.contains("controller.java.vm")) {
