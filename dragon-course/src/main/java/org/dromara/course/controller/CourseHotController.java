@@ -14,10 +14,7 @@ import org.dromara.course.service.CourseHotService;
 import org.dromara.course.service.CoursePublishService;
 import org.dromara.system.api.model.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -49,6 +46,7 @@ public class CourseHotController {
      *
      * @return {@link R}<{@link Void}>
      */
+    @Deprecated(since = "获取热门课程从es获取而不是redis，虽然redis也已经实现了分页")
     @GetMapping("/list")
     public TableDataInfo<CourseBaseVo> baseList(PageQuery pageQuery) {
         if (pageQuery.getPageNum() < 1){
@@ -87,7 +85,7 @@ public class CourseHotController {
     /**
      * 提拔热门课程
      * <br/>
-     *
+     * 用于热门管理，所以需要同时更新es
      * @return {@link R}<{@link Void}>
      */
     @GetMapping("/add/{id}")
@@ -100,10 +98,27 @@ public class CourseHotController {
         }
     }
 
+
+    /**
+     * 更新热门课程内容
+     * <br/>
+     * 用于重新发布课程，更新内容无hot，不需要更新es
+     * @return {@link R}<{@link Void}>
+     */
+    @PutMapping("/update/{id}")
+    public R<Void> update(@PathVariable("id") Long id) {
+        Boolean b = courseHotService.update(id);
+        if (b){
+            return R.ok("更新热门课程成功");
+        }else {
+            return R.fail("更新热门课程失败");
+        }
+    }
+
     /**
      * 罢免热门课程
      * <br/>
-     *
+     * 用于热门管理，所以需要同时更新es
      * @return {@link R}<{@link Void}>
      */
     @GetMapping("/del/{id}")
@@ -122,6 +137,7 @@ public class CourseHotController {
      * <br/>
      * 非热门课程，仅需base信息即可
      */
+    @Deprecated(since = "获取热门课程从es模块获取而不是course，和热门课程达到统一")
     @GetMapping("/list/notHot")
     public TableDataInfo<CourseBaseVo> listNotHot(CoursePublishBo bo, PageQuery pageQuery) {
         return coursePublishService.queryPageList(bo, pageQuery);

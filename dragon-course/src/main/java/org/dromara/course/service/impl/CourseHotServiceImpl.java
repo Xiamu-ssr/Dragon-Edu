@@ -2,6 +2,7 @@ package org.dromara.course.service.impl;
 
 import cn.hutool.http.HttpStatus;
 import com.alibaba.fastjson.JSON;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.dromara.common.core.constant.CacheNames;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -12,6 +13,7 @@ import org.dromara.course.domain.vo.CourseBaseVo;
 import org.dromara.course.mapper.*;
 import org.dromara.course.service.CourseHotService;
 import org.dromara.course.service.CourseMgtService;
+import org.dromara.es.api.RemoteESIndexService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,8 @@ public class CourseHotServiceImpl implements CourseHotService {
     TeacherMapper teacherMapper;
     @Autowired
     CoursePublishMapper coursePublishMapper;
+    @DubboReference
+    RemoteESIndexService remoteESIndexService;
 
 
     @Override
@@ -100,12 +104,37 @@ public class CourseHotServiceImpl implements CourseHotService {
 
     @Override
     public Boolean add(Long id) {
-        //判断是否已经存在
+        //已存在无法添加
         boolean b = CourseHotUtils.isHotExist(id);
         if (b){
             return false;
         }
         //不存在则提拔
+        CoursePublish coursePublish = coursePublishMapper.selectById(id);
+        if (coursePublish == null){
+            return false;
+        }
+        String info = coursePublish.getInfo();
+        CourseAll courseAll = JSON.parseObject(info, CourseAll.class);
+        //存入
+        RedisUtils.setCacheMapValue(CacheNames.COURSE_HOT, id.toString(), courseAll);
+        //增删热门课程后需要刷新hot id list
+        CourseHotUtils.reLoadHotIdList();
+        //二次check
+        boolean b1 = CourseHotUtils.isHotExist(id);
+        //还要更新es
+        boolean b2 = remoteESIndexService.setCourseHot(id, true);
+        return b1 && b2;
+    }
+
+    @Override
+    public Boolean update(Long id) {
+        //只有存在才能更新
+        boolean b = CourseHotUtils.isHotExist(id);
+        if (!b){
+            return false;
+        }
+        //存在则更新
         CoursePublish coursePublish = coursePublishMapper.selectById(id);
         if (coursePublish == null){
             return false;
@@ -131,7 +160,9 @@ public class CourseHotServiceImpl implements CourseHotService {
         RedisUtils.delCacheMapValue(CacheNames.COURSE_HOT, id.toString());
         //增删热门课程后需要刷新hot id list
         CourseHotUtils.reLoadHotIdList();
-        return !CourseHotUtils.isHotExist(id);
+        boolean b1 = !CourseHotUtils.isHotExist(id);
+        boolean b2 = remoteESIndexService.setCourseHot(id, false);
+        return b1 && b2;
     }
 
     private CourseBaseVo convertToCourseBaseVo(CourseAll courseAll) {

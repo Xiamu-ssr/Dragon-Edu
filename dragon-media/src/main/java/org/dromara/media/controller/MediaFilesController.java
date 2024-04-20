@@ -67,7 +67,8 @@ public class MediaFilesController extends BaseController {
     @GetMapping("/{id}")
     public R<MediaFilesVo> getInfo(@NotNull(message = "主键不能为空")
                                    @PathVariable String id) {
-        return R.ok(mediaFilesService.queryById(id));
+        Long companyId = LoginHelper.getDeptId();
+        return R.ok(mediaFilesService.queryById(id, companyId));
     }
 
     /**

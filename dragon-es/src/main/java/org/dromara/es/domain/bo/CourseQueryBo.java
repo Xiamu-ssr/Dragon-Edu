@@ -40,7 +40,16 @@ public class CourseQueryBo implements Serializable {
      */
     private Boolean charge;
 
+    /**
+     * 是否热门
+     */
+    private Boolean isHot;
+
+
     private OrderByParam orderByParam;
+
+    private Integer pageNum;
+    private Integer pageSize;
 
 }
 

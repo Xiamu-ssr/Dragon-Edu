@@ -33,7 +33,7 @@ public class MediaFilesBo implements Serializable {
     /**
      * 原名,只真正的原来的，文件名
      */
-    @NotBlank(message = "原名,只真正的原来的，文件名不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotBlank(message = "文件名不能为空", groups = { AddGroup.class, EditGroup.class })
     private String originalName;
 
     /**

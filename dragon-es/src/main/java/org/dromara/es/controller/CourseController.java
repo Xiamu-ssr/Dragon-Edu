@@ -51,13 +51,17 @@ public class CourseController {
         return courseBaseMapper.deleteById(id) > 0;
     }
 
-    @GetMapping("/list")
+    /**
+     * 分页查询
+     *
+     * @param bo bo
+     * @return {@link EsPageInfo}<{@link CourseBase}>
+     */
+    @PostMapping("/list")
     public EsPageInfo<CourseBase> pageList(
-        @ModelAttribute CourseQueryBo bo,
-        @RequestParam Integer pageNum,
-        @RequestParam Integer pageSize
+        @RequestBody CourseQueryBo bo
     ) {
-        return courseService.pageList(bo, pageNum, pageSize);
+        return courseService.pageList(bo, bo.getPageNum(), bo.getPageSize());
     }
 
 

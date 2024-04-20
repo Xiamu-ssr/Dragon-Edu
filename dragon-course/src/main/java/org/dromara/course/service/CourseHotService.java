@@ -47,6 +47,25 @@ public interface CourseHotService {
     Boolean add(Long id);
 
     /**
+     * 更新门课程
+     *
+     * @param id 身份证件
+     * @return {@link Boolean}
+     */
+    Boolean update(Long id);
+
+
+    ///**
+    // * 添加或者更新门课程
+    // *
+    // * @param id 身份证件
+    // * @return {@link Boolean}
+    // */
+    //Boolean save(Long id);
+
+
+
+    /**
      * 罢免热门课程
      *
      * @param id 身份证件

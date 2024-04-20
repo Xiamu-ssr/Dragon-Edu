@@ -16,4 +16,13 @@ public interface CourseService {
      * @return {@link EsPageInfo}<{@link CourseBase}>
      */
     EsPageInfo<CourseBase> pageList(CourseQueryBo courseQueryBo, Integer pageNum, Integer pageSize);
+
+    /**
+     * 设置课程的isHot属性
+     *
+     * @param id    身份证件
+     * @param isHot 很热
+     * @return {@link Boolean}
+     */
+    boolean setCourseHot(Long id, boolean isHot);
 }

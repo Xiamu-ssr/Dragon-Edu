@@ -23,7 +23,6 @@ public class MediaAuditController {
      */
     @GetMapping("/list")
     public TableDataInfo<MediaFilesVo> list(MediaFilesBo bo, PageQuery pageQuery) {
-        bo.setCompanyId(LoginHelper.getDeptId());
         return mediaAuditService.queryPageList(bo, pageQuery);
     }
 

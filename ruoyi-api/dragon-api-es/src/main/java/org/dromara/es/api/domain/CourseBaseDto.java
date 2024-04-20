@@ -80,6 +80,11 @@ public class CourseBaseDto implements Serializable {
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;
+
+    /**
+     * 是否热门
+     */
+    private Boolean isHot;
 }
 
 

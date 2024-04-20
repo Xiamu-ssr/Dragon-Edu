@@ -23,7 +23,7 @@ public interface MediaFilesService {
     /**
      * 查询media
      */
-    MediaFilesVo queryById(String id);
+    MediaFilesVo queryById(String id, Long companyId);
 
     /**
      * 查询media列表

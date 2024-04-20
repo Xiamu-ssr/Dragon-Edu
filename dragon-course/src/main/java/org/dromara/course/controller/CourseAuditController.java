@@ -21,8 +21,6 @@ public class CourseAuditController {
 
     @GetMapping("/list")
     public TableDataInfo<CourseBaseVo> list(CourseBaseBo bo, PageQuery pageQuery) {
-        LoginUser loginUser = LoginHelper.getLoginUser();
-        bo.setCompanyId(loginUser.getDeptId());
         return courseAuditService.queryPageList(bo, pageQuery);
     }
 

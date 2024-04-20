@@ -29,6 +29,7 @@ import org.dromara.media.domain.vo.MediaFilesVo;
 import org.dromara.media.domain.MediaFiles;
 import org.dromara.media.mapper.MediaFilesMapper;
 import org.dromara.media.service.MediaFilesService;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -54,8 +55,11 @@ public class MediaFilesServiceImpl implements MediaFilesService {
      * 查询media
      */
     @Override
-    public MediaFilesVo queryById(String id){
-        return mediaFilesMapper.selectVoById(id);
+    public MediaFilesVo queryById(String id, Long companyId){
+        return mediaFilesMapper.selectVoOne(new LambdaQueryWrapper<MediaFiles>()
+            .eq(MediaFiles::getId, id)
+            .eq(MediaFiles::getCompanyId, companyId)
+        );
     }
 
     /**

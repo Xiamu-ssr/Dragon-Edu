@@ -21,6 +21,8 @@ public abstract class MessageProcessAbstract {
     @Autowired
     MqMessageService mqMessageService;
 
+    protected OmsLogger omsLogger;
+
 
     /**
      * @param mqMessage 执行任务内容
@@ -44,7 +46,10 @@ public abstract class MessageProcessAbstract {
      * @date 2022/9/21 20:35
     */
     public void process(TaskContext taskContext, int shardIndex, int shardTotal, String messageType, int count, long timeout) {
-        OmsLogger omsLogger = taskContext.getOmsLogger();
+        omsLogger = taskContext.getOmsLogger();
+        if (omsLogger == null){
+            return;
+        }
         String currentShardLogPre = "[" + shardIndex + " - " + shardTotal + "] ";
         try {
             //扫描消息表获取任务清单
@@ -76,10 +81,11 @@ public abstract class MessageProcessAbstract {
                             }else{
                                 omsLogger.debug(currentShardLogPre+"任务执行失败:{}",message);
                             }
+                        }else {
+                            omsLogger.warn(currentShardLogPre+"任务执行失败:{}",message);
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        omsLogger.debug(currentShardLogPre+"任务出现异常:{},任务:{}",e.getMessage(),message);
+                        omsLogger.error(currentShardLogPre+"任务出现异常:{},任务:{}",e.getMessage(), message);
                     }finally {
                         //计数
                         countDownLatch.countDown();
@@ -93,7 +99,6 @@ public abstract class MessageProcessAbstract {
             countDownLatch.await(timeout,TimeUnit.SECONDS);
             omsLogger.info("over...   :)");
         } catch (InterruptedException e) {
-           e.printStackTrace();
             omsLogger.error(currentShardLogPre+"[!!!]未知异常:{}",e.getMessage());
         }
     }

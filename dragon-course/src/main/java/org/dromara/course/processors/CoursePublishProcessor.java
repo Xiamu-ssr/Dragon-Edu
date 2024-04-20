@@ -7,12 +7,14 @@ import org.dromara.common.messagesdk.enums.MessageTypeEnum;
 import org.dromara.common.messagesdk.service.MessageProcessAbstract;
 import org.dromara.common.messagesdk.service.MqMessageService;
 import lombok.extern.slf4j.Slf4j;
+import org.dromara.common.redis.utils.CourseHotUtils;
 import org.dromara.course.domain.*;
 import org.dromara.course.domain.vo.CourseMgt2Vo;
 import org.dromara.course.mapper.CourseBaseMapper;
 import org.dromara.course.mapper.CourseExtraMapper;
 import org.dromara.course.mapper.CoursePublishMapper;
 import org.dromara.course.mapper.TeacherMapper;
+import org.dromara.course.service.CourseHotService;
 import org.dromara.course.service.CourseMgtService;
 import org.dromara.es.api.RemoteESIndexService;
 import org.dromara.es.api.domain.CourseBaseDto;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Component;
 import tech.powerjob.worker.core.processor.ProcessResult;
 import tech.powerjob.worker.core.processor.TaskContext;
 import tech.powerjob.worker.core.processor.sdk.BasicProcessor;
+import tech.powerjob.worker.log.OmsLogger;
 
 import java.util.Arrays;
 import java.util.List;
@@ -44,6 +47,8 @@ public class CoursePublishProcessor extends MessageProcessAbstract implements Ba
     TeacherMapper teacherMapper;
     @Autowired
     CoursePublishMapper coursePublishMapper;
+    @Autowired
+    CourseHotService courseHotService;
     @DubboReference
     RemoteESIndexService remoteESIndexService;
 
@@ -81,7 +86,7 @@ public class CoursePublishProcessor extends MessageProcessAbstract implements Ba
         MqMessageService mqMessageService = this.getMqMessageService();
         int stageOne = mqMessageService.getStageOne(taskId);
         if (stageOne > 0){
-            log.debug("update mysql任务完成，无需处理");
+            omsLogger.debug("update mysql任务完成，无需处理");
             return true;
         }
         //get course all info
@@ -107,6 +112,7 @@ public class CoursePublishProcessor extends MessageProcessAbstract implements Ba
         }
         //处理完成修改对应数据状态
         mqMessageService.completedStageOne(taskId);
+        omsLogger.debug("update mysql任务处理完成");
         return true;
     }
 
@@ -124,18 +130,24 @@ public class CoursePublishProcessor extends MessageProcessAbstract implements Ba
         MqMessageService mqMessageService = this.getMqMessageService();
         int stageTwo = mqMessageService.getStageTwo(taskId);
         if (stageTwo > 0){
-            log.debug("update es任务完成，无需处理");
+            omsLogger.debug("update es任务完成，无需处理");
             return true;
         }
         //获取course_all数据，注入到course_base中
         CoursePublish coursePublish = coursePublishMapper.selectById(courseId);
-        CourseBaseDto courseBase = JSON.parseObject(coursePublish.getInfo(), CourseBaseDto.class);
-        Boolean b = remoteESIndexService.saveData2Index(courseBase);
+        CourseAll courseAll = JSON.parseObject(coursePublish.getInfo(), CourseAll.class);
+
+        CourseBaseDto courseBaseDto = new CourseBaseDto();
+        BeanUtils.copyProperties(courseAll, courseBaseDto);
+        courseBaseDto.setIsHot(CourseHotUtils.isHotExist(courseId));
+
+        Boolean b = remoteESIndexService.saveData2Index(courseBaseDto);
         if (!b){
             return false;
         }
         //处理完成修改对应数据状态
         mqMessageService.completedStageTwo(taskId);
+        omsLogger.debug("update es任务处理完成");
         return true;
     }
 
@@ -152,13 +164,20 @@ public class CoursePublishProcessor extends MessageProcessAbstract implements Ba
         MqMessageService mqMessageService = this.getMqMessageService();
         int stageThree = mqMessageService.getStageThree(taskId);
         if (stageThree > 0){
-            log.debug("update redis任务完成，无需处理");
+            omsLogger.debug("update redis任务完成，无需处理");
             return true;
         }
-        //:todo
-
+        //如果课程是热门课程则更新缓存
+        boolean b = CourseHotUtils.isHotExist(courseId);
+        if (b){
+            Boolean update = courseHotService.update(courseId);
+            if (!update){
+                return false;
+            }
+        }
         //处理完成修改对应数据状态
         mqMessageService.completedStageThree(taskId);
+        omsLogger.debug("update redis任务处理完成");
         return true;
     }
 }

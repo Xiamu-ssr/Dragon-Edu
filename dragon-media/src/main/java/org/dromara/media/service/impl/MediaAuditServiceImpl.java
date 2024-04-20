@@ -26,7 +26,6 @@ public class MediaAuditServiceImpl implements MediaAuditService {
     @Override
     public TableDataInfo<MediaFilesVo> queryPageList(MediaFilesBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<MediaFiles> lqw = Wrappers.lambdaQuery();
-        lqw.eq(MediaFiles::getCompanyId, bo.getCompanyId());
         lqw.like(StringUtils.isNotBlank(bo.getOriginalName()), MediaFiles::getOriginalName, bo.getOriginalName());
         lqw.eq(MediaFiles::getFileSuffix, ".mp4");
         lqw.eq(MediaFiles::getAuditStatus, MediaStatusEnum.UNDER_REVIEW.getValue());

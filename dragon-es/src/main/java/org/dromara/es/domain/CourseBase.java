@@ -43,7 +43,7 @@ public class CourseBase implements Serializable {
      * 课程名称
      */
     @IndexField(fieldType = FieldType.TEXT, analyzer = "ik_max_word", searchAnalyzer = "ik_smart", strategy = FieldStrategy.NOT_EMPTY)
-    @HighLight
+    @HighLight(preTag = "<b style='color:blue'>", postTag = "</b>")
     private String name;
 
     /**
@@ -105,6 +105,13 @@ public class CourseBase implements Serializable {
 
     @IndexField(fieldType = FieldType.DATE, strategy = FieldStrategy.NOT_NULL)
     private LocalDateTime updateTime;
+
+
+    /**
+     * 是否热门
+     */
+    @IndexField(fieldType = FieldType.BOOLEAN, strategy = FieldStrategy.NOT_NULL)
+    private Boolean isHot;
 }
 
 

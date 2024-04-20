@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
@@ -27,6 +28,7 @@ import org.dromara.course.mapper.TeacherMapper;
 import org.dromara.course.mapper.TeachplanMapper;
 import org.dromara.course.service.CourseMgtService;
 import org.dromara.course.service.TeachplanService;
+import org.dromara.es.api.RemoteMediaService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,6 +51,9 @@ public class CourseMgtServiceImpl implements CourseMgtService {
     private TeacherMapper teacherMapper;
     @Autowired
     private TeachplanService teachplanService;
+
+    @DubboReference
+    private RemoteMediaService remoteMediaService;
 
     /**
      * 查询课程
@@ -103,6 +108,21 @@ public class CourseMgtServiceImpl implements CourseMgtService {
     @Override
     public List<CourseMgt2Vo> getTwo(Long id) {
         List<Teachplan> teachplans = teachplanMapper.selectList(new LambdaQueryWrapper<Teachplan>().eq(Teachplan::getCourseId, id));
+        //:fixme
+        // 从media服务中去查询mediaName，因为teachplanMapper中的mediaName不一定实时。并且目前不打算在media同步mediaName
+        //获取所有需要查询的mediaIds
+        List<String> mediaIds = teachplans.stream()
+            .filter(teachplan -> StringUtils.isNotEmpty(teachplan.getMediaId()))
+            .map(Teachplan::getMediaId).toList();
+        //查询<mediaId, mediaName>的映射
+        Map<String, String> map = remoteMediaService.selectMediaNames(mediaIds);
+        //修改课程计划
+        teachplans.forEach(teachplan -> {
+            String mediaId = teachplan.getMediaId();
+            if (StringUtils.isNotEmpty(mediaId)){
+                teachplan.setMediaName(map.get(mediaId));
+            }
+        });
         //按照parentid分组
         Map<String, List<Teachplan>> listMap = teachplans.stream().collect(Collectors.groupingBy(Teachplan::getParentid));
         //处理大章节
@@ -219,7 +239,10 @@ public class CourseMgtServiceImpl implements CourseMgtService {
         if(isValid){
             //TODO 做一些业务上的校验,判断是否需要校验
         }
-        return courseBaseMapper.deleteBatchIds(ids) > 0 && courseExtraMapper.deleteBatchIds(ids) > 0;
+        boolean b1 = courseBaseMapper.deleteBatchIds(ids) > 0;
+        boolean b2 = courseExtraMapper.deleteBatchIds(ids) > 0;
+        boolean b3 = teachplanMapper.delete(new LambdaQueryWrapper<Teachplan>().in(Teachplan::getCourseId, ids)) > 0;
+        return  b1 && b2 && b3;
     }
 
     @Override

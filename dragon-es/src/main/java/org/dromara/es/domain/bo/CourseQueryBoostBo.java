@@ -38,6 +38,11 @@ public class CourseQueryBoostBo implements Serializable {
      * 是否收费
      */
     public static final Float charge = 1.0F;
+
+    /**
+     * 是否热门
+     */
+    public static final Float isHot = 1.0F;
 }
 
 
