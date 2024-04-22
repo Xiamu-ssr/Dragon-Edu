@@ -131,7 +131,8 @@ public class MediaFilesController extends BaseController {
     /**
      * 普通文件删除
      *
-     * @param ids 主键串
+     * @param files 文件夹
+     * @return {@link R}<{@link Void}>
      */
     @Log(title = "普通文件删除", businessType = BusinessType.DELETE)
     @PostMapping("/image/delete")

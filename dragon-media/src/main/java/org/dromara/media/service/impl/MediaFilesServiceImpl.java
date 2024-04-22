@@ -150,7 +150,7 @@ public class MediaFilesServiceImpl implements MediaFilesService {
     @Override
     public MediaImageVo uploadImage(MultipartFile file) {
         //上传至Minio
-        String md5 = calculateMD5(file);
+        String md5 = calculateMD5(file) + LoginHelper.getDeptId();
         String originalfileName = file.getOriginalFilename();
         String suffix = StringUtils.substring(originalfileName, originalfileName.lastIndexOf("."), originalfileName.length());
         String path = getPathByDate(suffix, md5);

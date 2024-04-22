@@ -115,14 +115,16 @@ public class CourseMgtServiceImpl implements CourseMgtService {
             .filter(teachplan -> StringUtils.isNotEmpty(teachplan.getMediaId()))
             .map(Teachplan::getMediaId).toList();
         //查询<mediaId, mediaName>的映射
-        Map<String, String> map = remoteMediaService.selectMediaNames(mediaIds);
-        //修改课程计划
-        teachplans.forEach(teachplan -> {
-            String mediaId = teachplan.getMediaId();
-            if (StringUtils.isNotEmpty(mediaId)){
-                teachplan.setMediaName(map.get(mediaId));
-            }
-        });
+        if(!mediaIds.isEmpty()){
+            Map<String, String> map = remoteMediaService.selectMediaNames(mediaIds);
+            //修改课程计划
+            teachplans.forEach(teachplan -> {
+                String mediaId = teachplan.getMediaId();
+                if (StringUtils.isNotEmpty(mediaId)){
+                    teachplan.setMediaName(map.get(mediaId));
+                }
+            });
+        }
         //按照parentid分组
         Map<String, List<Teachplan>> listMap = teachplans.stream().collect(Collectors.groupingBy(Teachplan::getParentid));
         //处理大章节

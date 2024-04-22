@@ -43,6 +43,11 @@ public class CourseCategory implements Serializable {
     private Long orderby;
 
     /**
+     * 描述
+     */
+    private String description;
+
+    /**
      * 是否叶子
      */
     private Boolean isLeaf;

@@ -41,6 +41,12 @@ public class CourseCategoryBo implements Serializable {
     private Long orderby;
 
     /**
+     * 描述
+     */
+    @NotBlank(message = "描述不能为空", groups = { AddGroup.class, EditGroup.class })
+    private String description;
+
+    /**
      * 是否叶子
      */
     private Boolean isLeaf;

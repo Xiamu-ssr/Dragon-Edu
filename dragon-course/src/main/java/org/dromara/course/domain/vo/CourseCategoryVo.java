@@ -54,6 +54,12 @@ public class CourseCategoryVo implements Serializable {
     private Long orderby;
 
     /**
+     * 描述
+     */
+    @ExcelProperty(value = "描述")
+    private String description;
+
+    /**
      * 是否叶子
      */
     @ExcelProperty(value = "是否叶子")
