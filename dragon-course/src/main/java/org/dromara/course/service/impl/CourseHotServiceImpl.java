@@ -111,7 +111,7 @@ public class CourseHotServiceImpl implements CourseHotService {
         }
         //不存在则提拔
         CoursePublish coursePublish = coursePublishMapper.selectById(id);
-        if (coursePublish == null){
+        if (coursePublish == null || coursePublish.getInfo() == null){
             return false;
         }
         String info = coursePublish.getInfo();

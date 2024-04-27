@@ -18,6 +18,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 热门课程
+ *
+ * @author mumu
+ * @date 2024/04/24
+ */
 @RestController
 @RequestMapping("/hot")
 public class CourseHotController {
@@ -141,6 +147,19 @@ public class CourseHotController {
     @GetMapping("/list/notHot")
     public TableDataInfo<CourseBaseVo> listNotHot(CoursePublishBo bo, PageQuery pageQuery) {
         return coursePublishService.queryPageList(bo, pageQuery);
+    }
+
+    /**
+     * 刷新redis缓存
+     * <br/>
+     * 热门课程由es查询，可能存在中途redis被删除等故障。需要根据es提供的ids记录，刷新热门课程。
+     * <br/>
+     *
+     */
+    //:todo
+    @GetMapping("/reload")
+    public R<Boolean> reload() {
+        return null;
     }
 
 }

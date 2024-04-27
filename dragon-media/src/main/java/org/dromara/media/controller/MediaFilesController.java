@@ -27,7 +27,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * media
+ * 媒资文件服务
  * 前端访问路由地址为:/media/media
  *
  * @author Xiamu

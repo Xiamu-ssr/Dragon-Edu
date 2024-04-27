@@ -13,11 +13,11 @@ import org.springframework.boot.context.metrics.buffering.BufferingApplicationSt
  */
 @EnableDubbo
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-public class DragonMediaApplication {
+public class DragonOrderApplication {
     public static void main(String[] args) {
-        SpringApplication application = new SpringApplication(DragonMediaApplication.class);
+        SpringApplication application = new SpringApplication(DragonOrderApplication.class);
         application.setApplicationStartup(new BufferingApplicationStartup(2048));
         application.run(args);
-        System.out.println("(♥◠‿◠)ﾉﾞ  媒资服务模块启动成功   ლ(´ڡ`ლ)ﾞ  ");
+        System.out.println("(♥◠‿◠)ﾉﾞ  订单服务模块启动成功   ლ(´ڡ`ლ)ﾞ  ");
     }
 }

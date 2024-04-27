@@ -11,6 +11,12 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
+/**
+ * 开放端点
+ *
+ * @author mumu
+ * @date 2024/04/24
+ */
 @RestController
 @RequestMapping("/open")
 public class CourseOpenController {

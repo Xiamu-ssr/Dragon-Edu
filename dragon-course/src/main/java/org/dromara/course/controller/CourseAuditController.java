@@ -12,6 +12,12 @@ import org.dromara.system.api.model.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 课程审核
+ *
+ * @author mumu
+ * @date 2024/04/24
+ */
 @RestController
 @RequestMapping("/audit")
 public class CourseAuditController {

@@ -293,12 +293,21 @@ public class SysUserServiceImpl implements ISysUserService {
      * @return 结果
      */
     @Override
+    @Transactional
     public boolean registerUser(SysUserBo user, String tenantId) {
+        //注册到sys_user
         user.setCreateBy(user.getUserId());
         user.setUpdateBy(user.getUserId());
+        user.setDeptId(1765753855255527426L);
         SysUser sysUser = MapstructUtils.convert(user, SysUser.class);
         sysUser.setTenantId(tenantId);
-        return baseMapper.insert(sysUser) > 0;
+        boolean b1 = baseMapper.insert(sysUser) > 0;
+        //同时设置用户角色sys_role
+        SysUserRole sysUserRole = new SysUserRole();
+        sysUserRole.setUserId(sysUser.getUserId());
+        sysUserRole.setRoleId(1776256902792491010L);
+        boolean b2 = userRoleMapper.insert(sysUserRole) > 0;
+        return b1 && b2;
     }
 
     /**

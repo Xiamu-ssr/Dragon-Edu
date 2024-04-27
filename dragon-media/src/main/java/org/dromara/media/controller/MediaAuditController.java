@@ -11,6 +11,12 @@ import org.dromara.media.service.MediaAuditService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 媒资审核
+ *
+ * @author mumu
+ * @date 2024/04/24
+ */
 @RestController
 @RequestMapping("/audit")
 public class MediaAuditController {
