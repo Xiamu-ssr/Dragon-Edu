@@ -1,4 +1,4 @@
-package org.dromara.media;
+package org.dromara.learn;
 
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;
@@ -13,11 +13,11 @@ import org.springframework.boot.context.metrics.buffering.BufferingApplicationSt
  */
 @EnableDubbo
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-public class DragonOrderApplication {
+public class DragonLearnApplication {
     public static void main(String[] args) {
-        SpringApplication application = new SpringApplication(DragonOrderApplication.class);
+        SpringApplication application = new SpringApplication(DragonLearnApplication.class);
         application.setApplicationStartup(new BufferingApplicationStartup(2048));
         application.run(args);
-        System.out.println("(♥◠‿◠)ﾉﾞ  订单服务模块启动成功   ლ(´ڡ`ლ)ﾞ  ");
+        System.out.println("(♥◠‿◠)ﾉﾞ  学习中心服务模块启动成功   ლ(´ڡ`ლ)ﾞ  ");
     }
 }

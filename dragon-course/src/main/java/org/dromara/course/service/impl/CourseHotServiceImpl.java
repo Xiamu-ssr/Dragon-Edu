@@ -93,8 +93,7 @@ public class CourseHotServiceImpl implements CourseHotService {
 
     @Override
     public CourseAll queryById(Long id) {
-        CourseAll courseAll = RedisUtils.getCacheMapValue(CacheNames.COURSE_HOT, id.toString());
-        return courseAll;
+        return RedisUtils.getCacheMapValue(CacheNames.COURSE_HOT, id.toString());
     }
 
     @Override

@@ -43,6 +43,7 @@
         <module>ruoyi-common-websocket</module>
         <module>ruoyi-common-social</module>
         <module>dragon-common-message-sdk</module>
+        <module>dragon-common-qrcode</module>
     </modules>
 
     <artifactId>ruoyi-common</artifactId>

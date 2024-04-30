@@ -1,5 +1,7 @@
 package org.dromara.course.service;
 
+import org.dromara.course.domain.CourseAll;
+import org.dromara.course.domain.CourseBase;
 import org.dromara.course.domain.CoursePublish;
 import org.dromara.course.domain.vo.CourseBaseVo;
 import org.dromara.course.domain.vo.CoursePublishVo;
@@ -47,4 +49,21 @@ public interface CoursePublishService {
      * 校验并批量删除课程发布信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+
+    /**
+     * 获取课程发布版所有信息
+     *
+     * @param courseId 课程id
+     * @return {@link CourseAll}
+     */
+    CourseAll getCourseAllInfo(Long courseId);
+
+    /**
+     * 获取课程发布版基础信息
+     *
+     * @param courseId 课程id
+     * @return {@link CourseAll}
+     */
+    CourseBase getCourseBaseInfo(Long courseId);
 }

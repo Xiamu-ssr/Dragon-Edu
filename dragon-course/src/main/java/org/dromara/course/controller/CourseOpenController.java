@@ -41,23 +41,5 @@ public class CourseOpenController {
         return categoryService.queryList(bo);
     }
 
-    /**
-     * 获取课程全部信息
-     * <br/>
-     * 如果是热门课程则使用redis，否则使用mysql
-     *
-     * @param id 身份证件
-     * @return {@link R}<{@link CourseAll}>
-     */
-    @GetMapping("/courseAll/{courseId}")
-    public R<CourseAll> getInfo(@PathVariable Long courseId) {
-        CourseAll courseAll = courseOpenService.getCourseAllInfo(courseId);
-        if (courseAll != null){
-            return R.ok(courseAll);
-        }else {
-            return R.fail("此课程不存在");
-        }
-    }
-
 
 }

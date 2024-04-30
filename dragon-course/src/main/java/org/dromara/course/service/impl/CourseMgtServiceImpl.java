@@ -1,6 +1,5 @@
 package org.dromara.course.service.impl;
 
-import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -28,7 +27,7 @@ import org.dromara.course.mapper.TeacherMapper;
 import org.dromara.course.mapper.TeachplanMapper;
 import org.dromara.course.service.CourseMgtService;
 import org.dromara.course.service.TeachplanService;
-import org.dromara.es.api.RemoteMediaService;
+import org.dromara.media.api.RemoteMediaService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

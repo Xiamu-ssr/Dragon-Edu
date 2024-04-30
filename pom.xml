@@ -390,6 +390,7 @@
         <module>dragon-media</module>
         <module>dragon-es</module>
         <module>dragon-order</module>
+        <module>dragon-learn</module>
     </modules>
     <packaging>pom</packaging>
 

@@ -1,5 +1,6 @@
 package org.dromara.course.domain;
 
+import org.apache.ibatis.type.Alias;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @TableName("course_base")
+@Alias("CourseBaseDomain")
 public class CourseBase implements Serializable {
 
     @Serial

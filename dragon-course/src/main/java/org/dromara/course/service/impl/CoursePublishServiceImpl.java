@@ -9,7 +9,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.redis.utils.CourseHotUtils;
+import org.dromara.course.domain.CourseAll;
+import org.dromara.course.domain.CourseBase;
 import org.dromara.course.domain.vo.CourseBaseVo;
+import org.dromara.course.service.CourseHotService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.dromara.course.domain.bo.CoursePublishBo;
 import org.dromara.course.domain.vo.CoursePublishVo;
@@ -18,9 +23,7 @@ import org.dromara.course.mapper.CoursePublishMapper;
 import org.dromara.course.service.CoursePublishService;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * 课程发布Service业务层处理
@@ -32,14 +35,16 @@ import java.util.stream.Collectors;
 @Service
 public class CoursePublishServiceImpl implements CoursePublishService {
 
-    private final CoursePublishMapper baseMapper;
+    private final CoursePublishMapper publishMapper;
+
+    private final CourseHotService hotService;
 
     /**
      * 查询课程发布
      */
     @Override
     public CoursePublishVo queryById(Long id){
-        return baseMapper.selectVoById(id);
+        return publishMapper.selectVoById(id);
     }
 
     /**
@@ -48,7 +53,7 @@ public class CoursePublishServiceImpl implements CoursePublishService {
     @Override
     public TableDataInfo<CourseBaseVo> queryPageList(CoursePublishBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<CoursePublish> lqw = buildQueryWrapper(bo);
-        Page<CoursePublishVo> resultPre = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        Page<CoursePublishVo> resultPre = publishMapper.selectVoPage(pageQuery.build(), lqw);
 
         Page<CourseBaseVo> result = new Page<>();
         result.setTotal(resultPre.getTotal());
@@ -65,7 +70,7 @@ public class CoursePublishServiceImpl implements CoursePublishService {
     @Override
     public List<CoursePublishVo> queryList(CoursePublishBo bo) {
         LambdaQueryWrapper<CoursePublish> lqw = buildQueryWrapper(bo);
-        return baseMapper.selectVoList(lqw);
+        return publishMapper.selectVoList(lqw);
     }
 
     private LambdaQueryWrapper<CoursePublish> buildQueryWrapper(CoursePublishBo bo) {
@@ -82,7 +87,7 @@ public class CoursePublishServiceImpl implements CoursePublishService {
     public Boolean insertByBo(CoursePublishBo bo) {
         CoursePublish add = MapstructUtils.convert(bo, CoursePublish.class);
         validEntityBeforeSave(add);
-        boolean flag = baseMapper.insert(add) > 0;
+        boolean flag = publishMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());
         }
@@ -96,7 +101,7 @@ public class CoursePublishServiceImpl implements CoursePublishService {
     public Boolean updateByBo(CoursePublishBo bo) {
         CoursePublish update = MapstructUtils.convert(bo, CoursePublish.class);
         validEntityBeforeSave(update);
-        return baseMapper.updateById(update) > 0;
+        return publishMapper.updateById(update) > 0;
     }
 
     /**
@@ -114,6 +119,31 @@ public class CoursePublishServiceImpl implements CoursePublishService {
         if(isValid){
             //TODO 做一些业务上的校验,判断是否需要校验
         }
-        return baseMapper.deleteBatchIds(ids) > 0;
+        return publishMapper.deleteBatchIds(ids) > 0;
+    }
+
+
+    @Override
+    public CourseAll getCourseAllInfo(Long courseId) {
+        CourseAll courseAll = null;
+        if (CourseHotUtils.isHotExist(courseId)){
+            courseAll = hotService.queryById(courseId);
+        }else {
+            CoursePublish coursePublish = publishMapper.selectById(courseId);
+            if (coursePublish == null || coursePublish.getInfo() == null){
+                return null;
+            }
+            String info = coursePublish.getInfo();
+            courseAll = com.alibaba.fastjson.JSON.parseObject(info, CourseAll.class);
+        }
+        return courseAll;
+    }
+
+    @Override
+    public CourseBase getCourseBaseInfo(Long courseId) {
+        CourseAll courseAllInfo = getCourseAllInfo(courseId);
+        CourseBase courseBase = new CourseBase();
+        BeanUtils.copyProperties(courseAllInfo, courseBase);
+        return courseBase;
     }
 }

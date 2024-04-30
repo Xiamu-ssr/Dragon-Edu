@@ -68,7 +68,7 @@ public class CourseHotController {
      * @return {@link TableDataInfo}<{@link CourseBaseVo}>
      */
     @GetMapping("/{id}")
-    public R<CourseAll> getInfo(@PathVariable Long id) {
+    public R<CourseAll> getInfoOnlyHot(@PathVariable Long id) {
         CourseAll courseAll = courseHotService.queryById(id);
         if (courseAll != null){
             return R.ok(courseAll);

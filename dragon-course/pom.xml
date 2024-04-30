@@ -113,6 +113,11 @@
             <version>2.1.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>dragon-api-course</artifactId>
+            <version>2.1.2</version>
+        </dependency>
 
         <dependency>
             <groupId>org.dromara</groupId>

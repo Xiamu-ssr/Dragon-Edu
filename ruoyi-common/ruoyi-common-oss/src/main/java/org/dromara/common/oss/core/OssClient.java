@@ -259,6 +259,14 @@ public class OssClient {
         URL url = client.generatePresignedUrl(generatePresignedUrlRequest);
         return url.toString();
     }
+    public String getPrivateUrl(String bucketName, String objectKey, Integer second) {
+        GeneratePresignedUrlRequest generatePresignedUrlRequest =
+            new GeneratePresignedUrlRequest(bucketName, objectKey)
+                .withMethod(HttpMethod.GET)
+                .withExpiration(new Date(System.currentTimeMillis() + 1000L * second));
+        URL url = client.generatePresignedUrl(generatePresignedUrlRequest);
+        return url.toString();
+    }
 
     /**
      * 检查配置是否相同

@@ -1,4 +1,4 @@
-package org.dromara.es.api;
+package org.dromara.media.api;
 
 
 import java.util.List;

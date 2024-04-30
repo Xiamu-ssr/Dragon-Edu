@@ -13,24 +13,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CourseOpenServiceImpl implements CourseOpenService {
-    @Autowired
-    CourseHotService courseHotService;
-    @Autowired
-    CoursePublishMapper coursePublishMapper;
 
-    @Override
-    public CourseAll getCourseAllInfo(Long courseId) {
-        CourseAll courseAll = null;
-        if (CourseHotUtils.isHotExist(courseId)){
-            courseAll = courseHotService.queryById(courseId);
-        }else {
-            CoursePublish coursePublish = coursePublishMapper.selectById(courseId);
-            if (coursePublish == null || coursePublish.getInfo() == null){
-                return null;
-            }
-            String info = coursePublish.getInfo();
-            courseAll = JSON.parseObject(info, CourseAll.class);
-        }
-        return courseAll;
-    }
 }
