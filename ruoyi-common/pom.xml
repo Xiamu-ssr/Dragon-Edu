@@ -44,6 +44,7 @@
         <module>ruoyi-common-social</module>
         <module>dragon-common-message-sdk</module>
         <module>dragon-common-qrcode</module>
+        <module>dragon-common-mq-domain</module>
     </modules>
 
     <artifactId>ruoyi-common</artifactId>

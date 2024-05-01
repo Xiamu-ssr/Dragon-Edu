@@ -6,18 +6,17 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
-import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.dromara.common.core.domain.R;
-import org.dromara.common.core.exception.base.BaseException;
-import org.dromara.common.qrcode.utils.QRCodeUtil;
+import org.dromara.common.mq.domain.OrderMessage;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.order.config.AlipayConfig;
 import org.dromara.order.domain.PayStatusDto;
 import org.dromara.order.domain.vo.OrderVo;
 import org.dromara.order.domain.vo.PayQRCodeVo;
 import org.dromara.order.enums.OrderStatusEnum;
+import org.dromara.order.mq.producer.OrderStreamProducer;
 import org.dromara.order.service.OrderPayService;
 import org.dromara.order.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +44,8 @@ public class OrderPayController {
     OrderPayService orderPayService;
     @Autowired
     OrderService orderService;
+    @Autowired
+    OrderStreamProducer orderProducer;
 
     /**
      * 生成付款二维码
@@ -181,6 +182,19 @@ public class OrderPayController {
         }
     }
 
+    /**
+     * 测试mq
+     *
+     * @return {@link R}<{@link Void}>
+     */
+    @GetMapping("/testMq")
+    @ResponseBody
+    public R<Void> testMq() {
+        OrderMessage order = new OrderMessage();
+        order.setCourseName("这只是测试");
+        orderProducer.orderSupplier(order);
+        return null;
+    }
 
 
 }

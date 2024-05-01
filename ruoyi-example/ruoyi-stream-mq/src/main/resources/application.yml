@@ -20,8 +20,8 @@ spring:
   rabbitmq:
     host: localhost
     port: 5672
-    username: root
-    password: root
+    username: ruoyi
+    password: ruoyi123
   cloud:
     stream:
       rabbit:

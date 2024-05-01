@@ -8,8 +8,8 @@ import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import org.apache.dubbo.config.annotation.DubboReference;
-import org.dromara.common.core.domain.R;
 import org.dromara.common.core.exception.base.BaseException;
+import org.dromara.common.mq.domain.OrderMessage;
 import org.dromara.common.qrcode.utils.QRCodeUtil;
 import org.dromara.course.api.RemoteCourseService;
 import org.dromara.course.api.domain.CourseBase;
@@ -20,8 +20,10 @@ import org.dromara.order.domain.vo.OrderVo;
 import org.dromara.order.domain.vo.PayQRCodeVo;
 import org.dromara.order.enums.OrderStatusEnum;
 import org.dromara.order.mapper.OrderMapper;
+import org.dromara.order.mq.producer.OrderStreamProducer;
 import org.dromara.order.service.OrderPayService;
 import org.dromara.order.service.OrderService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -29,7 +31,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 @Service
 public class OrderPayServiceImpl implements OrderPayService {
@@ -51,6 +52,9 @@ public class OrderPayServiceImpl implements OrderPayService {
     OrderPayService payService;
     @Autowired
     OrderService orderService;
+
+    @Autowired
+    OrderStreamProducer orderStreamProducer;
 
     @DubboReference
     RemoteCourseService remoteCourseService;
@@ -151,7 +155,9 @@ public class OrderPayServiceImpl implements OrderPayService {
                 .set(Order::getStatus, OrderStatusEnum.PAID_SUCCESS.getValue());
             boolean b1 = orderMapper.update(updateWrapper) > 0;
             //发送支付成功的消息到rabbitMq
-            //:todo
+            OrderMessage order = new OrderMessage();
+            BeanUtils.copyProperties(orderVo, order);
+            orderStreamProducer.orderSupplier(order);
             return true;
         }else {
             throw new BaseException("订单-未支付成功");

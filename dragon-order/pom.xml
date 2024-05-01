@@ -137,6 +137,18 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- rabbit mq 包 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>dragon-common-mq-domain</artifactId>
+            <version>2.1.2</version>
+        </dependency>
+
 
     </dependencies>
 
