@@ -69,6 +69,11 @@ public class OrderController extends BaseController {
     @Log(title = "订单服务", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(OrderBo bo, HttpServletResponse response) {
+        Long deptId = LoginHelper.getDeptId();
+        if (deptId == null){
+            return;
+        }
+        bo.setCompanyId(deptId);
         List<OrderVo> list = orderService.queryList(bo);
         ExcelUtil.exportExcel(list, "订单服务", OrderVo.class, response);
     }

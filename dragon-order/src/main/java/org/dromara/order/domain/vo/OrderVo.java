@@ -29,7 +29,6 @@ public class OrderVo implements Serializable {
     /**
      *
      */
-    @ExcelProperty(value = "")
     private Long id;
 
     /**
@@ -47,15 +46,14 @@ public class OrderVo implements Serializable {
     /**
      * 机构id
      */
-    @ExcelProperty(value = "机构id")
     private Long companyId;
 
     /**
      * 用户id
      */
-    @ExcelProperty(value = "用户id")
     private Long userId;
 
+    @ExcelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
     /**

@@ -72,7 +72,11 @@ public class CoursePublishProcessor extends MessageProcessAbstract implements Ba
         if (!b2){
             return false;
         }
-        return updateRedis(mqMessage);
+        boolean b3 = updateRedis(mqMessage);
+        if (!b3){
+            return false;
+        }
+        return updateDiscuss(mqMessage);
     }
 
     /**
@@ -178,6 +182,31 @@ public class CoursePublishProcessor extends MessageProcessAbstract implements Ba
         //处理完成修改对应数据状态
         mqMessageService.completedStageThree(taskId);
         omsLogger.debug("update redis任务处理完成");
+        return true;
+    }
+
+
+    /**
+     * 4. update discuss
+     */
+    public boolean updateDiscuss(MqMessage mqMessage){
+        Long taskId = mqMessage.getId();
+        Long courseId = Long.valueOf(mqMessage.getBusinessKey1());
+
+        //幂等性处理
+        //取出该阶段的执行状态，如果为不为0，则无需处理
+        MqMessageService mqMessageService = this.getMqMessageService();
+        int stageFour = mqMessageService.getStageFour(taskId);
+        if (stageFour > 0){
+            omsLogger.debug("update discuss任务完成，无需处理");
+            return true;
+        }
+        //新建评论统计条目
+        //:todo
+
+        //处理完成修改对应数据状态
+        mqMessageService.completedStageFour(taskId);
+        omsLogger.debug("update discuss任务处理完成");
         return true;
     }
 }

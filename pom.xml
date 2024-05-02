@@ -391,6 +391,7 @@
         <module>dragon-es</module>
         <module>dragon-order</module>
         <module>dragon-learn</module>
+        <module>dragon-discuss</module>
     </modules>
     <packaging>pom</packaging>
 
