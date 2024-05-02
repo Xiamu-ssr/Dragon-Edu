@@ -3,9 +3,11 @@ package org.dromara.learn.controller;
 import java.util.List;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
+import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.learn.domain.ClassSchedule;
 import org.dromara.learn.domain.bo.ClassScheduleBo;
@@ -32,6 +34,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
  * @author LionLi
  * @date 2024-04-27
  */
+@Slf4j
 @Validated
 @RequiredArgsConstructor
 @RestController
@@ -136,5 +139,36 @@ public class ClassScheduleController extends BaseController {
             .eq(ClassSchedule::getUserId, userId)
             .eq(ClassSchedule::getCourseId, id));
         return R.ok(exists);
+    }
+
+    /**
+     * 增加一门课程的学习时间1min
+     *
+     * @param id 主键串
+     */
+    @PatchMapping("/addLearnTime/{id}")
+    public R<String> addLearnTime(
+        @NotNull(message = "主键不能为空") @PathVariable Long id,
+        @NotNull(message = "时间不能为空") @RequestBody LearnTimeDto learnTimeDto
+    ) {
+        Long userId = LoginHelper.getUserId();
+        ClassSchedule schedule = scheduleMapper.selectOne(new LambdaQueryWrapper<ClassSchedule>()
+            .eq(ClassSchedule::getUserId, userId)
+            .eq(ClassSchedule::getCourseId, id));
+        if (schedule != null){
+            schedule.setLearningTime(schedule.getLearningTime() + learnTimeDto.getLearnTime());
+            boolean b = scheduleMapper.updateById(schedule) > 0;
+            if (!b){
+                log.error("增加课程学习时间失败。用户{},增加时长{},课程表实体{}", userId, learnTimeDto.getLearnTime(), schedule);
+            }
+            return R.ok();
+        }else {
+            return R.fail("您未拥有本门课程，请先购买");
+        }
+    }
+
+    @Data
+    public static class LearnTimeDto {
+        private Long learnTime;
     }
 }

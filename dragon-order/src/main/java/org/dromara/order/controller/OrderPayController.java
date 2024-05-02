@@ -165,35 +165,18 @@ public class OrderPayController {
             //交易金额
             String total_amount = new String(request.getParameter("total_amount").getBytes("ISO-8859-1"), "UTF-8");
             //——请根据您的业务逻辑来编写程序（以下代码仅作参考）——
-            if (trade_status.equals("TRADE_SUCCESS")) {
-                PayStatusDto payStatusDto = new PayStatusDto();
-                payStatusDto.setOut_trade_no(Long.parseLong(out_trade_no));
-                payStatusDto.setTrade_no(trade_no);
-                payStatusDto.setTrade_status(trade_status);
-                //app_id和total_amount可以不填
-                payStatusDto.setApp_id(APP_ID);
-                payStatusDto.setTotal_amount(total_amount);
-                System.out.println(payStatusDto);
-                orderPayService.saveAliPayStatus(payStatusDto);
-            }
+            PayStatusDto payStatusDto = new PayStatusDto();
+            payStatusDto.setOut_trade_no(Long.parseLong(out_trade_no));
+            payStatusDto.setTrade_no(trade_no);
+            payStatusDto.setTrade_status(trade_status);
+            //app_id和total_amount可以不填
+            payStatusDto.setApp_id(APP_ID);
+            payStatusDto.setTotal_amount(total_amount);
+            orderPayService.saveAliPayStatus(payStatusDto);
             response.getWriter().write("success");
         }else{
             response.getWriter().write("支付情况校验失败");
         }
-    }
-
-    /**
-     * 测试mq
-     *
-     * @return {@link R}<{@link Void}>
-     */
-    @GetMapping("/testMq")
-    @ResponseBody
-    public R<Void> testMq() {
-        OrderMessage order = new OrderMessage();
-        order.setCourseName("这只是测试");
-        orderProducer.orderSupplier(order);
-        return null;
     }
 
 

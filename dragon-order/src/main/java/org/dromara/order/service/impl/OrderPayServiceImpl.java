@@ -160,6 +160,11 @@ public class OrderPayServiceImpl implements OrderPayService {
             orderStreamProducer.orderSupplier(order);
             return true;
         }else {
+            //更新订单表状态order
+            LambdaUpdateWrapper<Order> updateWrapper = new LambdaUpdateWrapper<Order>()
+                .eq(Order::getId, payNo)
+                .set(Order::getStatus, OrderStatusEnum.PAID_FAILED.getValue());
+            boolean b1 = orderMapper.update(updateWrapper) > 0;
             throw new BaseException("订单-未支付成功");
         }
     }

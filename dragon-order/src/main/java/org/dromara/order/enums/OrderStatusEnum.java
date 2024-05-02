@@ -3,7 +3,7 @@ package org.dromara.order.enums;
 public enum OrderStatusEnum {
     UNPAID(1, "未支付"),
     PAID_SUCCESS(2, "支付成功"),
-    PAID_FAILED(2, "支付失败")
+    PAID_FAILED(3, "支付失败")
     ;
 
     private final int value;

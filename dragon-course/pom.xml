@@ -137,6 +137,11 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-logstash</artifactId>
+        </dependency>
+
 
     </dependencies>
 

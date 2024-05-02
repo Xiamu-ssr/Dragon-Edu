@@ -14,7 +14,7 @@ public class MyDeadLetterConsumer {
 
     @RabbitListener(queues = "orderExchange.learnGroup.dlq")
     public void listenErrorQueue(String msg){
-        log.info("消费者接收到error.queue的消息：【" + msg + "】");
+        log.error("订单支付成功,但是无法完成后续操作,请及时处理,消息：[" + msg + "]");
     }
 
 }

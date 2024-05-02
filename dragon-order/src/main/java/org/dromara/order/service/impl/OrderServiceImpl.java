@@ -67,6 +67,7 @@ public class OrderServiceImpl implements OrderService {
         lqw.eq(bo.getPrice() != null, Order::getPrice, bo.getPrice());
         lqw.eq(bo.getStatus() != null, Order::getStatus, bo.getStatus());
         lqw.eq(StringUtils.isNotBlank(bo.getRemarks()), Order::getRemarks, bo.getRemarks());
+        lqw.orderByDesc(Order::getId);
         return lqw;
     }
 

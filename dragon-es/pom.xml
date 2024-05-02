@@ -105,6 +105,11 @@
             <version>2.1.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-logstash</artifactId>
+        </dependency>
+
 
     </dependencies>
 

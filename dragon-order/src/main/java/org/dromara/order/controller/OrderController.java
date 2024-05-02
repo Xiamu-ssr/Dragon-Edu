@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.common.core.enums.UserType;
+import org.dromara.common.satoken.utils.LoginHelper;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -39,9 +41,25 @@ public class OrderController extends BaseController {
 
     /**
      * 查询订单服务列表
+     * <br/>
+     * 用户用
      */
-    @GetMapping("/list")
+    @GetMapping("/list/user")
     public TableDataInfo<OrderVo> list(OrderBo bo, PageQuery pageQuery) {
+        Long userId = LoginHelper.getUserId();
+        bo.setUserId(userId);
+        return orderService.queryPageList(bo, pageQuery);
+    }
+
+    /**
+     * 查询订单服务列表
+     * <br/>
+     * 机构用
+     */
+    @GetMapping("/list/company")
+    public TableDataInfo<OrderVo> listCompany(OrderBo bo, PageQuery pageQuery) {
+        Long deptId = LoginHelper.getDeptId();
+        bo.setCompanyId(deptId);
         return orderService.queryPageList(bo, pageQuery);
     }
 

@@ -25,10 +25,10 @@
 
     <dependencies>
         <!-- ELK 日志收集 -->
-<!--        <dependency>-->
-<!--            <groupId>org.dromara</groupId>-->
-<!--            <artifactId>ruoyi-common-logstash</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-logstash</artifactId>
+        </dependency>
 
         <!-- skywalking 日志收集 -->
 <!--        <dependency>-->
