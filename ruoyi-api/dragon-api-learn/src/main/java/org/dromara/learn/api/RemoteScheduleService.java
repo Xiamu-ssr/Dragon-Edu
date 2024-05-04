@@ -20,4 +20,13 @@ public interface RemoteScheduleService {
      */
     boolean isOwnCourse(Long userId, Long courseId);
 
+    /**
+     * 用户学习时长
+     *
+     * @param userId   用户id
+     * @param courseId 课程id
+     * @return boolean
+     */
+    long userLearnTime(Long userId, Long courseId);
+
 }

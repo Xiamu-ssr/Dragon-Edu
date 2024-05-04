@@ -82,6 +82,12 @@ public class DiscussVo implements Serializable {
     private Long learnTime;
 
     /**
+     * 评论内容
+     */
+    @ExcelProperty(value = "评论内容")
+    private String content;
+
+    /**
      * 评分
      */
     @ExcelProperty(value = "评分")

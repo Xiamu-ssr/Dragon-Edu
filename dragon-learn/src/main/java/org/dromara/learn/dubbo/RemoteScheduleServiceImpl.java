@@ -21,4 +21,14 @@ public class RemoteScheduleServiceImpl implements RemoteScheduleService {
         ClassSchedule schedule = scheduleMapper.selectOne(queryWrapper);
         return schedule != null;
     }
+
+    @Override
+    public long userLearnTime(Long userId, Long courseId) {
+        ClassSchedule schedule = scheduleMapper.selectOne(new LambdaQueryWrapper<ClassSchedule>()
+            .select(ClassSchedule::getLearningTime)
+            .eq(ClassSchedule::getUserId, userId)
+            .eq(ClassSchedule::getCourseId, courseId)
+        );
+        return schedule.getLearningTime();
+    }
 }

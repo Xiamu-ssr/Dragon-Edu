@@ -23,6 +23,11 @@ public interface DiscussStatisticsService {
     DiscussStatisticsVo queryById(Long id);
 
     /**
+     * 查询评论统计，机构用
+     */
+    DiscussStatisticsVo queryByCourseId(Long courseId);
+
+    /**
      * 查询评论统计，机构用列表
      */
     TableDataInfo<DiscussStatisticsVo> queryPageList(DiscussStatisticsBo bo, PageQuery pageQuery);

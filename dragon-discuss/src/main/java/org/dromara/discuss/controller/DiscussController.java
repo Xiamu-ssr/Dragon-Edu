@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.apache.dubbo.config.annotation.DubboReference;
+import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.learn.api.RemoteScheduleService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -36,6 +39,9 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 public class DiscussController extends BaseController {
 
     private final DiscussService discussService;
+
+    @DubboReference
+    RemoteScheduleService scheduleService;
 
     /**
      * 查询课程评论列表
@@ -72,8 +78,23 @@ public class DiscussController extends BaseController {
     @Log(title = "课程评论", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody DiscussBo bo) {
-        return toAjax(discussService.insertByBo(bo));
+    public R<String> add(@Validated(AddGroup.class) @RequestBody DiscussBo bo) {
+        Long userId = LoginHelper.getUserId();
+        String username = LoginHelper.getUsername();
+        bo.setUserId(userId);
+        bo.setUserName(username);
+        //if this user own this course?
+        boolean ownCourse = scheduleService.isOwnCourse(userId, bo.getCourseId());
+        if (!ownCourse){
+            return R.fail("未拥有该课程，无法发布评论，请先加入课程表或购买");
+        }
+        //if own, then can publish discuss
+        Boolean b = discussService.insertByBo(bo);
+        if (b){
+            return R.ok("发布评论成功");
+        }else {
+            return R.fail("发布失败");
+        }
     }
 
     /**

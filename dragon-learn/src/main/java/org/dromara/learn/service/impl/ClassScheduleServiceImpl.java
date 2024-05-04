@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.dromara.course.api.RemoteCourseService;
 import org.dromara.course.api.domain.CourseBase;
 import org.dromara.learn.domain.bo.ClassScheduleBo;
+import org.dromara.learn.domain.vo.SimpleStatisticsVo;
 import org.dromara.learn.service.ClassScheduleService;
 import org.springframework.stereotype.Service;
 import org.dromara.learn.domain.vo.ClassScheduleVo;
@@ -128,5 +129,19 @@ public class ClassScheduleServiceImpl implements ClassScheduleService {
         }else {
             return false;
         }
+    }
+
+    @Override
+    public SimpleStatisticsVo simpleStatistics(Long userId) {
+        SimpleStatisticsVo statisticsVo = new SimpleStatisticsVo();
+        Long courseCount = baseMapper.selectCount(new LambdaQueryWrapper<ClassSchedule>()
+            .eq(ClassSchedule::getUserId, userId)
+        );
+        statisticsVo.setCourseCount(courseCount);
+
+        Long sumLearningTime = baseMapper.sumLearningTime(userId);
+        statisticsVo.setLearnTimeCount(sumLearningTime);
+
+        return statisticsVo;
     }
 }

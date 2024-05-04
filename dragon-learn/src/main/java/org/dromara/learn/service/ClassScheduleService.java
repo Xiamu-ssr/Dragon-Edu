@@ -4,6 +4,7 @@ import org.dromara.learn.domain.bo.ClassScheduleBo;
 import org.dromara.learn.domain.vo.ClassScheduleVo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
+import org.dromara.learn.domain.vo.SimpleStatisticsVo;
 
 import java.util.Collection;
 import java.util.List;
@@ -46,5 +47,21 @@ public interface ClassScheduleService {
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
+    /**
+     * 添加免费课程
+     *
+     * @param userId   用户id
+     * @param courseId 课程id
+     * @return {@link Boolean}
+     */
     Boolean addFreeCourse(Long userId, Long courseId);
+
+
+    /**
+     * 用户简要数据统计
+     *
+     * @param userId 用户id
+     * @return {@link SimpleStatisticsVo}
+     */
+    SimpleStatisticsVo simpleStatistics(Long userId);
 }

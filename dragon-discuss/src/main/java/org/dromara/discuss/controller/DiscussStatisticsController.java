@@ -67,6 +67,18 @@ public class DiscussStatisticsController extends BaseController {
     }
 
     /**
+     * 获取评论统计，机构用详细信息
+     *
+     * @param courseId 课程id
+     * @return {@link R}<{@link DiscussStatisticsVo}>
+     */
+    @GetMapping("/course/{courseId}")
+    public R<DiscussStatisticsVo> getInfoByCourseId(@NotNull(message = "主键不能为空")
+                                          @PathVariable Long courseId) {
+        return R.ok(discussStatisticsService.queryByCourseId(courseId));
+    }
+
+    /**
      * 新增评论统计，机构用
      */
     @Log(title = "评论统计，机构用", businessType = BusinessType.INSERT)

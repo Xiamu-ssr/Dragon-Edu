@@ -1,5 +1,8 @@
 package org.dromara.discuss.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
+import org.dromara.common.core.exception.base.BaseException;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -8,13 +11,21 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.dromara.course.api.RemoteCourseService;
+import org.dromara.course.api.domain.CourseBase;
+import org.dromara.discuss.domain.DiscussStatistics;
+import org.dromara.discuss.enums.DiscussStatusEnum;
+import org.dromara.discuss.mapper.DiscussStatisticsMapper;
+import org.dromara.learn.api.RemoteScheduleService;
 import org.springframework.stereotype.Service;
 import org.dromara.discuss.domain.bo.DiscussBo;
 import org.dromara.discuss.domain.vo.DiscussVo;
 import org.dromara.discuss.domain.Discuss;
 import org.dromara.discuss.mapper.DiscussMapper;
 import org.dromara.discuss.service.DiscussService;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
@@ -23,20 +34,28 @@ import java.util.Collection;
  * 课程评论Service业务层处理
  *
  * @author LionLi
- * @date 2024-05-02
+ * @date 2024-05-03
  */
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class DiscussServiceImpl implements DiscussService {
 
-    private final DiscussMapper baseMapper;
+    private final DiscussMapper discussMapper;
+
+    private final DiscussStatisticsMapper statisticsMapper;
+
+    @DubboReference
+    RemoteScheduleService scheduleService;
+    @DubboReference
+    RemoteCourseService courseService;
 
     /**
      * 查询课程评论
      */
     @Override
     public DiscussVo queryById(Long id){
-        return baseMapper.selectVoById(id);
+        return discussMapper.selectVoById(id);
     }
 
     /**
@@ -45,7 +64,7 @@ public class DiscussServiceImpl implements DiscussService {
     @Override
     public TableDataInfo<DiscussVo> queryPageList(DiscussBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<Discuss> lqw = buildQueryWrapper(bo);
-        Page<DiscussVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        Page<DiscussVo> result = discussMapper.selectVoPage(pageQuery.build(), lqw);
         return TableDataInfo.build(result);
     }
 
@@ -55,7 +74,7 @@ public class DiscussServiceImpl implements DiscussService {
     @Override
     public List<DiscussVo> queryList(DiscussBo bo) {
         LambdaQueryWrapper<Discuss> lqw = buildQueryWrapper(bo);
-        return baseMapper.selectVoList(lqw);
+        return discussMapper.selectVoList(lqw);
     }
 
     private LambdaQueryWrapper<Discuss> buildQueryWrapper(DiscussBo bo) {
@@ -67,6 +86,7 @@ public class DiscussServiceImpl implements DiscussService {
         lqw.like(StringUtils.isNotBlank(bo.getUserName()), Discuss::getUserName, bo.getUserName());
         lqw.eq(StringUtils.isNotBlank(bo.getAvatar()), Discuss::getAvatar, bo.getAvatar());
         lqw.eq(bo.getLearnTime() != null, Discuss::getLearnTime, bo.getLearnTime());
+        lqw.eq(StringUtils.isNotBlank(bo.getContent()), Discuss::getContent, bo.getContent());
         lqw.eq(bo.getStar() != null, Discuss::getStar, bo.getStar());
         lqw.eq(bo.getStatus() != null, Discuss::getStatus, bo.getStatus());
         return lqw;
@@ -76,14 +96,19 @@ public class DiscussServiceImpl implements DiscussService {
      * 新增课程评论
      */
     @Override
+    @Transactional
     public Boolean insertByBo(DiscussBo bo) {
         Discuss add = MapstructUtils.convert(bo, Discuss.class);
         validEntityBeforeSave(add);
-        boolean flag = baseMapper.insert(add) > 0;
-        if (flag) {
-            bo.setId(add.getId());
-        }
-        return flag;
+        //set discuss status
+        add.setStatus((long)DiscussStatusEnum.SUCCESS.getValue());
+        //get user learning Time
+        long learnTime = scheduleService.userLearnTime(add.getUserId(), add.getCourseId());
+        add.setLearnTime(learnTime);
+        boolean b1 = discussMapper.insert(add) > 0;
+        //then update discuss statistics
+        boolean b2 = addDiscussToStatistics(add);
+        return b1 && b2;
     }
 
     /**
@@ -93,7 +118,7 @@ public class DiscussServiceImpl implements DiscussService {
     public Boolean updateByBo(DiscussBo bo) {
         Discuss update = MapstructUtils.convert(bo, Discuss.class);
         validEntityBeforeSave(update);
-        return baseMapper.updateById(update) > 0;
+        return discussMapper.updateById(update) > 0;
     }
 
     /**
@@ -111,6 +136,39 @@ public class DiscussServiceImpl implements DiscussService {
         if(isValid){
             //TODO 做一些业务上的校验,判断是否需要校验
         }
-        return baseMapper.deleteBatchIds(ids) > 0;
+        return discussMapper.deleteBatchIds(ids) > 0;
+    }
+
+    @Override
+    @Transactional
+    public boolean addDiscussToStatistics(Discuss discuss){
+        LambdaQueryWrapper<DiscussStatistics> queryWrapper = new LambdaQueryWrapper<DiscussStatistics>()
+            .eq(DiscussStatistics::getCourseId, discuss.getCourseId());
+        //if this course's statistics exits?
+        //if not , create base one
+        boolean exists = statisticsMapper.exists(queryWrapper);
+        if (!exists){
+            CourseBase courseBase = courseService.getCourseBaseById(discuss.getCourseId());
+            DiscussStatistics statistics = new DiscussStatistics();
+            statistics.setCourseId(courseBase.getId());
+            statistics.setCourseName(courseBase.getName());
+            statistics.setPic(courseBase.getPic());
+            statistics.setCompanyId(courseBase.getCompanyId());
+            statistics.setDiscussCount(0L);
+            statistics.setStar(new BigDecimal("5.0"));
+            boolean b = statisticsMapper.insert(statistics) > 0;
+            if (!b){
+                log.error("初始化评论统计表失败:{}", discuss);
+                throw new BaseException("初始化评论统计系统失败");
+            }
+        }
+        //now exist , then calculate new  Star-Value
+        DiscussStatistics statistics = statisticsMapper.selectOne(queryWrapper);
+        BigDecimal multiply = BigDecimal.valueOf(statistics.getDiscussCount()).multiply(statistics.getStar());
+        statistics.setDiscussCount(statistics.getDiscussCount() + 1);
+        BigDecimal sum = multiply.add(discuss.getStar());
+        BigDecimal newStar = sum.divide(BigDecimal.valueOf(statistics.getDiscussCount()));
+        statistics.setStar(newStar);
+        return statisticsMapper.updateById(statistics) > 0;
     }
 }

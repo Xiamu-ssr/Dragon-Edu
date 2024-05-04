@@ -46,4 +46,12 @@ public interface DiscussService {
      * 校验并批量删除课程评论信息
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    /**
+     * 将一条评论添加到统计中
+     *
+     * @param discuss 讨论
+     * @return boolean
+     */
+    boolean addDiscussToStatistics(Discuss discuss);
 }

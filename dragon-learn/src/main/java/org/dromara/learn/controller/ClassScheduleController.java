@@ -12,6 +12,7 @@ import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.learn.domain.ClassSchedule;
 import org.dromara.learn.domain.bo.ClassScheduleBo;
 import org.dromara.learn.domain.vo.ClassScheduleVo;
+import org.dromara.learn.domain.vo.SimpleStatisticsVo;
 import org.dromara.learn.mapper.ClassScheduleMapper;
 import org.dromara.learn.service.ClassScheduleService;
 import org.springframework.web.bind.annotation.*;
@@ -170,5 +171,15 @@ public class ClassScheduleController extends BaseController {
     @Data
     public static class LearnTimeDto {
         private Long learnTime;
+    }
+
+    /**
+     * 用户简要统计数据
+     *
+     */
+    @GetMapping("/simpleStatistics")
+    public R<SimpleStatisticsVo> simpleStatistics() {
+        Long userId = LoginHelper.getUserId();
+        return R.ok(classScheduleService.simpleStatistics(userId));
     }
 }

@@ -49,13 +49,13 @@ public class DiscussBo implements Serializable {
     /**
      * 用户id
      */
-    @NotNull(message = "用户id不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "用户id不能为空", groups = { EditGroup.class })
     private Long userId;
 
     /**
      * 用户名称
      */
-    @NotBlank(message = "用户名称不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotBlank(message = "用户名称不能为空", groups = { EditGroup.class })
     private String userName;
 
     /**
@@ -67,8 +67,14 @@ public class DiscussBo implements Serializable {
     /**
      * 评论时用户学习时长/分钟
      */
-    @NotNull(message = "评论时用户学习时长/分钟不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "评论时用户学习时长/分钟不能为空", groups = { EditGroup.class })
     private Long learnTime;
+
+    /**
+     * 评论内容
+     */
+    @NotBlank(message = "评论内容不能为空", groups = { AddGroup.class, EditGroup.class })
+    private String content;
 
     /**
      * 评分
@@ -79,7 +85,7 @@ public class DiscussBo implements Serializable {
     /**
      * 评论状态。1正常2申请屏蔽3屏蔽
      */
-    @NotNull(message = "评论状态。1正常2申请屏蔽3屏蔽不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotNull(message = "评论状态。1正常2申请屏蔽3屏蔽不能为空", groups = { EditGroup.class })
     private Long status;
 
     private LocalDateTime createTime;

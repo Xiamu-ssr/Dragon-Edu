@@ -65,6 +65,11 @@ public class Discuss implements Serializable {
     private Long learnTime;
 
     /**
+     * 评论内容
+     */
+    private String content;
+
+    /**
      * 评分
      */
     private BigDecimal star;
