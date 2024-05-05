@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 
 /**
  * 课程索引
@@ -39,9 +40,14 @@ public class CourseController {
      */
     @PostMapping("/save")
     public boolean save(@RequestBody CourseBase courseBase) {
-        if (courseBaseMapper.selectById(courseBase.getId()) == null){
+        CourseBase baseOld = courseBaseMapper.selectById(courseBase.getId());
+        if (baseOld == null){
+            //没有这个es说明，第一次发布，将star设置为默认5.0
+            courseBase.setStar(new BigDecimal("5.0"));
             return courseBaseMapper.insert(courseBase) > 0;
         }else {
+            //如果这个索引存在，说明是更新后发布，此时不更新star。star额外设置新函数来让评论模块更新
+            courseBase.setStar(baseOld.getStar());
             return courseBaseMapper.updateById(courseBase) > 0;
         }
     }

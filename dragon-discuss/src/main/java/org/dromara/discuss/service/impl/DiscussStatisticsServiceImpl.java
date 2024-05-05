@@ -45,6 +45,12 @@ public class DiscussStatisticsServiceImpl implements DiscussStatisticsService {
             .eq(DiscussStatistics::getCourseId, courseId));
     }
 
+    @Override
+    public List<DiscussStatisticsVo> queryByCompanyId(Long companyId) {
+        return baseMapper.selectVoList(new LambdaQueryWrapper<DiscussStatistics>()
+            .eq(DiscussStatistics::getCompanyId, companyId));
+    }
+
     /**
      * 查询评论统计，机构用列表
      */

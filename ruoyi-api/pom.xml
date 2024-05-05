@@ -17,6 +17,7 @@
         <module>dragon-api-media</module>
         <module>dragon-api-order</module>
         <module>dragon-api-learn</module>
+        <module>dragon-api-discuss</module>
     </modules>
 
     <artifactId>ruoyi-api</artifactId>

@@ -48,9 +48,12 @@ public class ClassScheduleController extends BaseController {
 
     /**
      * 查询课程表列表
+     * <br/>
+     * 查询某个用户的课程表
      */
     @GetMapping("/list")
     public TableDataInfo<ClassScheduleVo> list(ClassScheduleBo bo, PageQuery pageQuery) {
+        bo.setUserId(LoginHelper.getUserId());
         return classScheduleService.queryPageList(bo, pageQuery);
     }
 

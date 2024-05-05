@@ -23,9 +23,17 @@ public interface DiscussStatisticsService {
     DiscussStatisticsVo queryById(Long id);
 
     /**
-     * 查询评论统计，机构用
+     * 查询某一课程评论统计
      */
     DiscussStatisticsVo queryByCourseId(Long courseId);
+
+    /**
+     * 按公司id获取所有课程评论统计
+     *
+     * @param courseId 课程id
+     * @return {@link List}<{@link DiscussStatisticsVo}>
+     */
+    List<DiscussStatisticsVo> queryByCompanyId(Long companyId);
 
     /**
      * 查询评论统计，机构用列表

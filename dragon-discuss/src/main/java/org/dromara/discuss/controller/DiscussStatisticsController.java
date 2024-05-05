@@ -2,10 +2,13 @@ package org.dromara.discuss.controller;
 
 import java.util.List;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaMode;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.dromara.common.satoken.utils.LoginHelper;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
@@ -67,7 +70,7 @@ public class DiscussStatisticsController extends BaseController {
     }
 
     /**
-     * 获取评论统计，机构用详细信息
+     * 获取某一课程评论统计
      *
      * @param courseId 课程id
      * @return {@link R}<{@link DiscussStatisticsVo}>
@@ -76,6 +79,24 @@ public class DiscussStatisticsController extends BaseController {
     public R<DiscussStatisticsVo> getInfoByCourseId(@NotNull(message = "主键不能为空")
                                           @PathVariable Long courseId) {
         return R.ok(discussStatisticsService.queryByCourseId(courseId));
+    }
+
+    /**
+     * 获取某一机构的所有课程评论统计
+     *
+     * @return {@link R}<{@link DiscussStatisticsVo}>
+     */
+    @GetMapping("/listAll")
+    @SaCheckRole(
+        value = {
+            "organization",
+            "operator"
+        },
+        mode = SaMode.OR
+    )
+    public R<List<DiscussStatisticsVo>> getInfoByCompanyId() {
+        Long companyId = LoginHelper.getDeptId();
+        return R.ok(discussStatisticsService.queryByCompanyId(companyId));
     }
 
     /**

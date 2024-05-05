@@ -2,12 +2,16 @@ package org.dromara.discuss.controller;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.discuss.domain.Discuss;
+import org.dromara.discuss.enums.DiscussStatusEnum;
+import org.dromara.discuss.mapper.DiscussMapper;
 import org.dromara.learn.api.RemoteScheduleService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
@@ -40,14 +44,29 @@ public class DiscussController extends BaseController {
 
     private final DiscussService discussService;
 
+    private final DiscussMapper discussMapper;
+
     @DubboReference
     RemoteScheduleService scheduleService;
 
     /**
      * 查询课程评论列表
+     * <br/>
+     * 不指定状态，只显示‘正常’，用户端用
      */
     @GetMapping("/list")
     public TableDataInfo<DiscussVo> list(DiscussBo bo, PageQuery pageQuery) {
+        bo.setStatus((long) DiscussStatusEnum.SUCCESS.getValue());
+        return discussService.queryPageList(bo, pageQuery);
+    }
+
+    /**
+     * 查询课程评论列表
+     * <br/>
+     * 机构端用
+     */
+    @GetMapping("/listForCompany")
+    public TableDataInfo<DiscussVo> listForCompany(DiscussBo bo, PageQuery pageQuery) {
         return discussService.queryPageList(bo, pageQuery);
     }
 
@@ -117,5 +136,22 @@ public class DiscussController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable Long[] ids) {
         return toAjax(discussService.deleteWithValidByIds(List.of(ids), true));
+    }
+
+    /**
+     * 申请屏蔽
+     */
+    @GetMapping("/applyForBlock/{id}")
+    public R<String> applyForBlock(@NotNull(message = "主键不能为空")
+                                     @PathVariable Long id) {
+        boolean b = discussMapper.update(new LambdaUpdateWrapper<Discuss>()
+            .eq(Discuss::getId, id)
+            .set(Discuss::getStatus, DiscussStatusEnum.APPLYBLOCK.getValue())
+        ) > 0;
+        if (b){
+            return R.ok("申请成功");
+        }else {
+            return R.fail("申请失败");
+        }
     }
 }

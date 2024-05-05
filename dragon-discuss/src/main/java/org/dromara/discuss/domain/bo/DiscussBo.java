@@ -1,5 +1,7 @@
 package org.dromara.discuss.domain.bo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.dromara.discuss.domain.Discuss;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.core.validate.AddGroup;
@@ -11,6 +13,9 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 课程评论业务对象 discuss
@@ -77,7 +82,7 @@ public class DiscussBo implements Serializable {
     private String content;
 
     /**
-     * 评分
+     * 评分,这个bo是评分的范围查询
      */
     @NotNull(message = "评分不能为空", groups = { AddGroup.class, EditGroup.class })
     private BigDecimal star;
@@ -89,4 +94,9 @@ public class DiscussBo implements Serializable {
     private Long status;
 
     private LocalDateTime createTime;
+
+    /**
+     * params额外参数，目前可以用于评论星级范围查询
+     */
+    private Map<String, Object> params = new HashMap<>();
 }

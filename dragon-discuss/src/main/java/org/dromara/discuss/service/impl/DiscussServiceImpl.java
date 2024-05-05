@@ -26,6 +26,7 @@ import org.dromara.discuss.service.DiscussService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
@@ -63,6 +64,9 @@ public class DiscussServiceImpl implements DiscussService {
      */
     @Override
     public TableDataInfo<DiscussVo> queryPageList(DiscussBo bo, PageQuery pageQuery) {
+        if(bo.getCourseId() == null){
+            throw new BaseException("未指定课程，无法查询评论信息");
+        }
         LambdaQueryWrapper<Discuss> lqw = buildQueryWrapper(bo);
         Page<DiscussVo> result = discussMapper.selectVoPage(pageQuery.build(), lqw);
         return TableDataInfo.build(result);
@@ -78,6 +82,7 @@ public class DiscussServiceImpl implements DiscussService {
     }
 
     private LambdaQueryWrapper<Discuss> buildQueryWrapper(DiscussBo bo) {
+        Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<Discuss> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getCourseId() != null, Discuss::getCourseId, bo.getCourseId());
         lqw.like(StringUtils.isNotBlank(bo.getCourseName()), Discuss::getCourseName, bo.getCourseName());
@@ -87,8 +92,11 @@ public class DiscussServiceImpl implements DiscussService {
         lqw.eq(StringUtils.isNotBlank(bo.getAvatar()), Discuss::getAvatar, bo.getAvatar());
         lqw.eq(bo.getLearnTime() != null, Discuss::getLearnTime, bo.getLearnTime());
         lqw.eq(StringUtils.isNotBlank(bo.getContent()), Discuss::getContent, bo.getContent());
-        lqw.eq(bo.getStar() != null, Discuss::getStar, bo.getStar());
         lqw.eq(bo.getStatus() != null, Discuss::getStatus, bo.getStatus());
+        lqw.between(params.get("beginStar") != null && params.get("endStar") != null,
+            Discuss::getStar ,params.get("beginStar"), params.get("endStar"));
+        //default, order by create time
+        lqw.orderByDesc(Discuss::getCreateTime);
         return lqw;
     }
 
@@ -167,7 +175,7 @@ public class DiscussServiceImpl implements DiscussService {
         BigDecimal multiply = BigDecimal.valueOf(statistics.getDiscussCount()).multiply(statistics.getStar());
         statistics.setDiscussCount(statistics.getDiscussCount() + 1);
         BigDecimal sum = multiply.add(discuss.getStar());
-        BigDecimal newStar = sum.divide(BigDecimal.valueOf(statistics.getDiscussCount()));
+        BigDecimal newStar = sum.divide(BigDecimal.valueOf(statistics.getDiscussCount()), 8, RoundingMode.HALF_UP);
         statistics.setStar(newStar);
         return statisticsMapper.updateById(statistics) > 0;
     }

@@ -72,6 +72,7 @@ public class CourseAll implements Serializable {
     /**
      * 评分
      */
+    @Deprecated(since = "基础表不存储星级，一是因为业务上用不到，二是因为评论模块不好更新这个属性，三是因为这个属性在其他地方不好同步。")
     private BigDecimal star;
 
     /**

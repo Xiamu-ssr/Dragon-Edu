@@ -16,6 +16,8 @@ import org.dromara.course.mapper.CoursePublishMapper;
 import org.dromara.course.mapper.TeacherMapper;
 import org.dromara.course.service.CourseHotService;
 import org.dromara.course.service.CourseMgtService;
+import org.dromara.discuss.api.RemoteDiscussService;
+import org.dromara.discuss.api.domain.RemoteDiscussCourseBaseDto;
 import org.dromara.es.api.RemoteESIndexService;
 import org.dromara.es.api.domain.CourseBaseDto;
 import org.springframework.beans.BeanUtils;
@@ -51,6 +53,8 @@ public class CoursePublishProcessor extends MessageProcessAbstract implements Ba
     CourseHotService courseHotService;
     @DubboReference
     RemoteESIndexService remoteESIndexService;
+    @DubboReference
+    RemoteDiscussService remoteDiscussService;
 
 
     @Override
@@ -202,8 +206,14 @@ public class CoursePublishProcessor extends MessageProcessAbstract implements Ba
             return true;
         }
         //新建评论统计条目
-        //:todo
-
+        CoursePublish coursePublish = coursePublishMapper.selectById(courseId);
+        CourseAll courseAll = JSON.parseObject(coursePublish.getInfo(), CourseAll.class);
+        RemoteDiscussCourseBaseDto courseBaseDto = new RemoteDiscussCourseBaseDto();
+        BeanUtils.copyProperties(courseAll, courseBaseDto);
+        boolean b = remoteDiscussService.createNewStatistics(courseBaseDto);
+        if (!b){
+            return false;
+        }
         //处理完成修改对应数据状态
         mqMessageService.completedStageFour(taskId);
         omsLogger.debug("update discuss任务处理完成");
