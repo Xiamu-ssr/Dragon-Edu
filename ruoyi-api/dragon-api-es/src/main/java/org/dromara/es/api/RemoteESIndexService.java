@@ -1,7 +1,12 @@
 package org.dromara.es.api;
 
 
+import org.dromara.common.core.domain.R;
 import org.dromara.es.api.domain.CourseBaseDto;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 远程ES 索引服务
@@ -29,5 +34,24 @@ public interface RemoteESIndexService {
      * @return {@link Boolean}
      */
     boolean setCourseHot(Long id, boolean isHot);
+
+
+    /**
+     * 更新课程的star
+     *
+     * @param courseId 课程id
+     * @param star     明星
+     * @return boolean
+     */
+    R<String> updateStar(Long courseId, BigDecimal star);
+
+    /**
+     * 批量更新课程的star
+     *
+     * @param star      明星
+     * @param courseIds 课程ID
+     * @return boolean
+     */
+    R<String> updateStarBatch(Map<Long, BigDecimal> courseStars);
 
 }

@@ -31,3 +31,4 @@ spring:
       - optional:nacos:datasource.yml
       - optional:nacos:${spring.application.name}.yml
       - optional:nacos:dragon-rabbitmq.yml
+      - optional:nacos:dragon-powerjob.yml

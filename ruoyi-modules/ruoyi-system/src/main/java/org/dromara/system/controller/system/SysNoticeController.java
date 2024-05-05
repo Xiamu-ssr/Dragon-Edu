@@ -1,6 +1,8 @@
 package org.dromara.system.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaMode;
 import lombok.RequiredArgsConstructor;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.dromara.common.core.domain.R;
@@ -35,11 +37,27 @@ public class SysNoticeController extends BaseController {
     private final RemoteMessageService remoteMessageService;
 
     /**
-     * 获取通知公告列表
+     * 获取通知公告列表-operator用
      */
     @SaCheckPermission("system:notice:list")
     @GetMapping("/list")
     public TableDataInfo<SysNoticeVo> list(SysNoticeBo notice, PageQuery pageQuery) {
+        return noticeService.selectPageNoticeList(notice, pageQuery);
+    }
+
+    /**
+     * 获取通知公告列表-organization用
+     */
+    @SaCheckRole(
+        value = {
+            "organization",
+            "operator"
+        },
+        mode = SaMode.OR
+    )
+    @GetMapping("/organization/list")
+    public TableDataInfo<SysNoticeVo> organizationList(SysNoticeBo notice, PageQuery pageQuery) {
+        notice.setStatus("0");
         return noticeService.selectPageNoticeList(notice, pageQuery);
     }
 
