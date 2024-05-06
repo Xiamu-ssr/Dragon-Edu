@@ -16,8 +16,14 @@ import java.util.List;
  */
 public interface OrderMapper extends BaseMapperPlus<Order, OrderVo> {
 
+    /**
+     * 为每个company查询前一天的订单统计信息
+     *
+     * @return {@link List}<{@link CompanySalesDTO}>
+     */
     @Select("SELECT company_id, COUNT(*) AS order_count, SUM(price) AS total_sales " +
         "FROM order_table WHERE DATE(create_time) = CURDATE() - INTERVAL 1 DAY " +
+        "AND status = 2 "+
         "GROUP BY company_id")
     List<CompanySalesDTO> queryStatistics();
 }

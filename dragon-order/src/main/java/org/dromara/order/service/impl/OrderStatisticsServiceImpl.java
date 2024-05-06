@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -35,5 +37,65 @@ public class OrderStatisticsServiceImpl implements OrderStatisticsService {
             dateMap.putIfAbsent(date, new OrderStatistics(null,companyId, 0L, BigDecimal.ZERO, date));
         }
         return dateMap;
+    }
+
+    @Override
+    public Long queryThisWeekSaleNum(Long companyId) {
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+        Long salesNum = orderStatisticsMapper.queryRangeSaleNum(companyId, startOfWeek.toString(), endOfWeek.toString());
+        return salesNum != null ? salesNum : 0; // 返回0代替null，避免外部处理null情况
+    }
+
+    @Override
+    public Long queryLastWeekSaleNum(Long companyId) {
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusWeeks(1);
+        LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).minusWeeks(1);
+
+        Long salesNum = orderStatisticsMapper.queryRangeSaleNum(companyId, startOfWeek.toString(), endOfWeek.toString());
+        return salesNum != null ? salesNum : 0; // 返回0代替null，避免外部处理null情况
+    }
+
+    @Override
+    public Long queryLastXWeekSaleNum(Long companyId, int X) {
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusWeeks(X);
+        LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).minusWeeks(X);
+
+        Long salesNum = orderStatisticsMapper.queryRangeSaleNum(companyId, startOfWeek.toString(), endOfWeek.toString());
+        return salesNum != null ? salesNum : 0; // 返回0代替null，避免外部处理null情况
+    }
+
+    @Override
+    public BigDecimal queryThisWeekSale(Long companyId) {
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+        BigDecimal sale = orderStatisticsMapper.queryRangeSale(companyId, startOfWeek.toString(), endOfWeek.toString());
+        return sale != null ? sale : BigDecimal.ZERO; // 返回0代替null，避免外部处理null情况
+    }
+
+    @Override
+    public BigDecimal queryLastWeekSale(Long companyId) {
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusWeeks(1);
+        LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).minusWeeks(1);
+
+        BigDecimal sale = orderStatisticsMapper.queryRangeSale(companyId, startOfWeek.toString(), endOfWeek.toString());
+        return sale != null ? sale : BigDecimal.ZERO; // 返回0代替null，避免外部处理null情况
+    }
+
+    @Override
+    public BigDecimal queryLastXWeekSale(Long companyId, int X) {
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusWeeks(X);
+        LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).minusWeeks(X);
+
+        BigDecimal sale = orderStatisticsMapper.queryRangeSale(companyId, startOfWeek.toString(), endOfWeek.toString());
+        return sale != null ? sale : BigDecimal.ZERO; // 返回0代替null，避免外部处理null情况
     }
 }

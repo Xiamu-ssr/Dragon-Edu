@@ -70,4 +70,11 @@ public interface CacheNames {
      */
     String COURSE_HOT = "course_hot";
 
+    /**
+     * 机构每日统计数据
+     * <br/>
+     * 不是map。每个机构用这个前缀接上company_id。默认过期时间1小时吧
+     */
+    String COMPANY_STATISTICS = "company_statistics";
+
 }

@@ -7,12 +7,15 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.dromara.common.core.exception.base.BaseException;
 import org.dromara.course.api.domain.CourseBase;
 import org.dromara.discuss.api.RemoteDiscussService;
+import org.dromara.discuss.api.domain.BestCourseDto;
 import org.dromara.discuss.api.domain.RemoteDiscussCourseBaseDto;
 import org.dromara.discuss.domain.DiscussStatistics;
 import org.dromara.discuss.mapper.DiscussStatisticsMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @DubboService
 @Slf4j
@@ -45,5 +48,26 @@ public class RemoteDiscussServiceImpl implements RemoteDiscussService {
             return true;
         }
         return true;
+    }
+
+    @Override
+    public Integer getDiscussNum(Long company_id) {
+        Long discussNum = statisticsMapper.getDiscussNum(company_id);
+        return discussNum.intValue();
+    }
+
+    @Override
+    public List<BestCourseDto> getBestCourse(Long company_id) {
+        List<DiscussStatistics> list = statisticsMapper.selectList(new LambdaQueryWrapper<DiscussStatistics>()
+            .select(DiscussStatistics::getCourseName, DiscussStatistics::getStar)
+            .eq(DiscussStatistics::getCompanyId, company_id)
+            .orderByDesc(DiscussStatistics::getStar)
+            .last("limit 5")
+        );
+        return list.stream().map(discussStatistics -> {
+            BestCourseDto dto = new BestCourseDto();
+            BeanUtils.copyProperties(discussStatistics, dto);
+            return dto;
+        }).toList();
     }
 }

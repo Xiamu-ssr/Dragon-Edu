@@ -1,8 +1,10 @@
 package org.dromara.discuss.api;
 
 
+import org.dromara.discuss.api.domain.BestCourseDto;
 import org.dromara.discuss.api.domain.RemoteDiscussCourseBaseDto;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,5 +25,23 @@ public interface RemoteDiscussService {
      * @return boolean
      */
     boolean createNewStatistics(RemoteDiscussCourseBaseDto dto);
+
+
+    /**
+     * 查询机构评论总数
+     *
+     * @param company_id 公司id
+     * @return {@link Integer}
+     */
+    Integer getDiscussNum(Long company_id);
+
+
+    /**
+     * 查询最佳课程（默认5个）
+     *
+     * @param company_id 公司id
+     * @return {@link Integer}
+     */
+    List<BestCourseDto> getBestCourse(Long company_id);
 
 }

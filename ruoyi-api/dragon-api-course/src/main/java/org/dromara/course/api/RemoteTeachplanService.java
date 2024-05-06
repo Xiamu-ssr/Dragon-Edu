@@ -25,4 +25,14 @@ public interface RemoteTeachplanService {
      */
     Map<String, Object> checkAndGetMedia(Long courseId, String teachplanId);
 
+    /**
+     * 查询某公司的章节数量
+     * <br/>
+     *
+     * @param companyId 公司id
+     * @return {@link Integer}
+     */
+    @Deprecated(since = "和查询课程数量统一了")
+    Integer getTeachplanNum(Long companyId);
+
 }
