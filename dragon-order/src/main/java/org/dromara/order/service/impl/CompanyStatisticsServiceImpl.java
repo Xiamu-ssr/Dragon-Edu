@@ -72,7 +72,7 @@ public class CompanyStatisticsServiceImpl implements CompanyStatisticsService {
         BigDecimal lastWeekSale = orderStatisticsService.queryLastWeekSale(companyId);
         BigDecimal last2WeekSale = orderStatisticsService.queryLastXWeekSale(companyId, 2);
         if (Objects.equals(last2WeekSale, BigDecimal.ZERO)){
-            vo.setRevenueGrowRate(1000);
+            vo.setRevenueGrowRate(100);
         }else {
             BigDecimal salesIncrement = lastWeekSale.subtract(last2WeekSale);
             BigDecimal growthRate = salesIncrement.divide(last2WeekSale, 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
@@ -101,13 +101,15 @@ public class CompanyStatisticsServiceImpl implements CompanyStatisticsService {
             .orderByDesc(Order::getCreateTime)
             .last("limit 10");
         List<Order> orders = orderMapper.selectList(queryWrapper);
-        List<Long> ids = orders.stream().map(Order::getId).toList();
-        Map<Long, String> id2pic = remoteCourseService.getCoursePics(ids);
-        for (Order order : orders) {
-            CurrentOrdersVo vo1 = new CurrentOrdersVo();
-            BeanUtils.copyProperties(order, vo1);
-            vo1.setPic(id2pic.get(vo1.getCourseId()));
-            currentOrdersVos.add(vo1);
+        if (!orders.isEmpty()){
+            List<Long> ids = orders.stream().map(Order::getCourseId).toList();
+            Map<Long, String> id2pic = remoteCourseService.getCoursePics(ids);
+            for (Order order : orders) {
+                CurrentOrdersVo vo1 = new CurrentOrdersVo();
+                BeanUtils.copyProperties(order, vo1);
+                vo1.setPic(id2pic.get(vo1.getCourseId()));
+                currentOrdersVos.add(vo1);
+            }
         }
         vo.setCurrentOrders(currentOrdersVos);
         //saleData
@@ -123,7 +125,7 @@ public class CompanyStatisticsServiceImpl implements CompanyStatisticsService {
             saleMoney.add(map.get(date).getSale());
         }
         SaleDataEchartsVo echartsVo = new SaleDataEchartsVo();
-        echartsVo.setXAxis(xAxis);
+        echartsVo.setxAxis(xAxis);
         echartsVo.setSaleNum(saleNum);
         echartsVo.setSaleMoney(saleMoney);
         vo.setSaleData(echartsVo);
@@ -144,7 +146,8 @@ public class CompanyStatisticsServiceImpl implements CompanyStatisticsService {
         String cachedValue = RedisUtils.getCacheObject(key);
         if (cachedValue == null){
             TotalStatisticsVo totalData = getTotalData(companyId);
-            RedisUtils.setCacheObject(key, JSON.toJSON(totalData));
+            String string = JSON.toJSONString(totalData);
+            RedisUtils.setCacheObject(key, string);
             RedisUtils.expire(key, Duration.ofHours(1).getSeconds());
             return totalData;
         }else {

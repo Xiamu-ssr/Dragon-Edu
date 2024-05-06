@@ -33,7 +33,7 @@ public interface RemoteDiscussService {
      * @param company_id 公司id
      * @return {@link Integer}
      */
-    Integer getDiscussNum(Long company_id);
+    Integer getDiscussNum(Long companyId);
 
 
     /**
@@ -42,6 +42,6 @@ public interface RemoteDiscussService {
      * @param company_id 公司id
      * @return {@link Integer}
      */
-    List<BestCourseDto> getBestCourse(Long company_id);
+    List<BestCourseDto> getBestCourse(Long companyId);
 
 }

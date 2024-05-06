@@ -57,9 +57,12 @@ public class RemoteCourseServiceImpl implements RemoteCourseService {
             .map(id -> (Long) id)
             .toList();
         //teachplan number
-        Long count = teachplanMapper.selectCount(new LambdaQueryWrapper<Teachplan>()
-            .in(Teachplan::getCourseId, ids)
-        );
+        Long count = 0L;
+        if (!ids.isEmpty()){
+            count = teachplanMapper.selectCount(new LambdaQueryWrapper<Teachplan>()
+                .in(Teachplan::getCourseId, ids)
+            );
+        }
         //return
         ArrayList<Integer> res = new ArrayList<>();
         res.add(ids.size());

@@ -51,16 +51,16 @@ public class RemoteDiscussServiceImpl implements RemoteDiscussService {
     }
 
     @Override
-    public Integer getDiscussNum(Long company_id) {
-        Long discussNum = statisticsMapper.getDiscussNum(company_id);
-        return discussNum.intValue();
+    public Integer getDiscussNum(Long companyId) {
+        Long discussNum = statisticsMapper.getDiscussNum(companyId);
+        return discussNum==null ? 0 : discussNum.intValue();
     }
 
     @Override
-    public List<BestCourseDto> getBestCourse(Long company_id) {
+    public List<BestCourseDto> getBestCourse(Long companyId) {
         List<DiscussStatistics> list = statisticsMapper.selectList(new LambdaQueryWrapper<DiscussStatistics>()
             .select(DiscussStatistics::getCourseName, DiscussStatistics::getStar)
-            .eq(DiscussStatistics::getCompanyId, company_id)
+            .eq(DiscussStatistics::getCompanyId, companyId)
             .orderByDesc(DiscussStatistics::getStar)
             .last("limit 5")
         );

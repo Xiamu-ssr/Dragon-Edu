@@ -16,7 +16,7 @@ public interface DiscussStatisticsMapper extends BaseMapperPlus<DiscussStatistic
 
     @Select("SELECT SUM(discuss_count) " +
         "FROM discuss_statistics " +
-        "WHERE company_id = #{company_id}")
-    Long getDiscussNum(@Param("companyId") Long company_id);
+        "WHERE company_id = #{companyId}")
+    Long getDiscussNum(@Param("companyId") Long companyId);
 
 }
