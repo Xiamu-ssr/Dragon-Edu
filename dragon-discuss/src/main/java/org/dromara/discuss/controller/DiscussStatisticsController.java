@@ -90,7 +90,9 @@ public class DiscussStatisticsController extends BaseController {
     @SaCheckRole(
         value = {
             "organization",
-            "operator"
+            "operator",
+            "developer",
+            "superadmin"
         },
         mode = SaMode.OR
     )

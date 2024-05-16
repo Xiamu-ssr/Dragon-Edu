@@ -13,6 +13,7 @@ services:
       MYSQL_DATABASE: ry-cloud
     ports:
       - "3306:3306"
+      - "3306:3306"
     volumes:
       # 数据挂载
       - /docker/mysql/data/:/var/lib/mysql/

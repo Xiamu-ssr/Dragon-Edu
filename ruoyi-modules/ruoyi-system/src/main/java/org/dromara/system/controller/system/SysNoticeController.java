@@ -48,13 +48,6 @@ public class SysNoticeController extends BaseController {
     /**
      * 获取通知公告列表-organization用
      */
-    @SaCheckRole(
-        value = {
-            "organization",
-            "operator"
-        },
-        mode = SaMode.OR
-    )
     @GetMapping("/organization/list")
     public TableDataInfo<SysNoticeVo> organizationList(SysNoticeBo notice, PageQuery pageQuery) {
         notice.setStatus("0");
