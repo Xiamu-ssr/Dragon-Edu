@@ -1,6 +1,9 @@
 package org.dromara.es.service.impl;
 
+import com.alibaba.fastjson2.JSON;
+import org.dromara.common.core.constant.CacheNames;
 import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.easyes.core.biz.EsPageInfo;
 import org.dromara.easyes.core.biz.OrderByParam;
 import org.dromara.easyes.core.conditions.select.LambdaEsQueryWrapper;
@@ -16,9 +19,11 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.Duration;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -63,6 +68,24 @@ public class CourseServiceImpl implements CourseService {
 
         //分页查询
         return courseBaseMapper.pageQuery(queryWrapper, pageNum, pageSize);
+    }
+
+    @Cacheable(value = "hotCourseListCache", key = "#bo.pageNum + '-' + #bo.pageSize", cacheManager = "caffeineCacheManager")
+    @Override
+    public EsPageInfo<CourseBase> homePageList(CourseQueryBo bo) {
+        String key = CacheNames.HOMEPAGE_FIRST_HOT;
+        String cachedValue = RedisUtils.getCacheObject(key);
+        if (cachedValue == null){
+            EsPageInfo<CourseBase> pageInfo = pageList(bo, bo.getPageNum(), bo.getPageSize());
+            String string = JSON.toJSONString(pageInfo);
+            RedisUtils.setCacheObject(key, string);
+            RedisUtils.expire(key, Duration.ofHours(2).getSeconds());
+            return pageInfo;
+        }else {
+            // 从缓存的 JSON 字符串转换为对象
+            EsPageInfo<CourseBase> pageInfo = JSON.parseObject(cachedValue, EsPageInfo.class);
+            return pageInfo;
+        }
     }
 
     @Override

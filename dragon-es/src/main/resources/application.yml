@@ -10,7 +10,7 @@ spring:
   profiles:
     # 环境配置
     active: @profiles.active@
-
+#debug: true
 --- # nacos 配置
 spring:
   cloud:

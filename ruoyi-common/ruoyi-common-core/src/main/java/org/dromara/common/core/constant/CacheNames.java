@@ -77,4 +77,6 @@ public interface CacheNames {
      */
     String COMPANY_STATISTICS = "company_statistics";
 
+    String HOMEPAGE_FIRST_HOT = "homepage_first_hot";
+
 }

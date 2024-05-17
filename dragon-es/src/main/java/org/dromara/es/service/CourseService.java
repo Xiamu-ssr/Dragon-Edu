@@ -18,6 +18,14 @@ public interface CourseService {
     EsPageInfo<CourseBase> pageList(CourseQueryBo courseQueryBo, Integer pageNum, Integer pageSize);
 
     /**
+     * 首页热门查询
+     *
+     * @param bo bo
+     * @return {@link EsPageInfo}<{@link CourseBase}>
+     */
+    EsPageInfo<CourseBase> homePageList(CourseQueryBo bo);
+
+    /**
      * 设置课程的isHot属性
      *
      * @param id    身份证件

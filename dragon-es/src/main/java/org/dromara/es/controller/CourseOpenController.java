@@ -9,7 +9,6 @@ import org.dromara.es.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 
 /**
  * 开放端点
@@ -36,6 +35,19 @@ public class CourseOpenController {
         return courseService.pageList(bo, bo.getPageNum(), bo.getPageSize());
     }
 
+
+    /**
+     * 首页热门查询
+     *
+     * @param bo bo
+     * @return {@link EsPageInfo}<{@link CourseBase}>
+     */
+    @PostMapping("/homePageList")
+    public EsPageInfo<CourseBase> homePageList(
+        @RequestBody CourseQueryBo bo
+    ) {
+        return courseService.homePageList(bo);
+    }
 
 
 }
