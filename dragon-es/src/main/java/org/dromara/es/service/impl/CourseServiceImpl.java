@@ -1,6 +1,7 @@
 package org.dromara.es.service.impl;
 
 import com.alibaba.fastjson2.JSON;
+import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.constant.CacheNames;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.redis.utils.RedisUtils;
@@ -26,6 +27,7 @@ import javax.annotation.Resource;
 import java.time.Duration;
 
 @Service
+@Slf4j
 public class CourseServiceImpl implements CourseService {
 
     @Resource
@@ -70,7 +72,6 @@ public class CourseServiceImpl implements CourseService {
         return courseBaseMapper.pageQuery(queryWrapper, pageNum, pageSize);
     }
 
-    @Cacheable(value = "hotCourseListCache", key = "#bo.pageNum + '-' + #bo.pageSize", cacheManager = "caffeineCacheManager")
     @Override
     public EsPageInfo<CourseBase> homePageList(CourseQueryBo bo) {
         String key = CacheNames.HOMEPAGE_FIRST_HOT;

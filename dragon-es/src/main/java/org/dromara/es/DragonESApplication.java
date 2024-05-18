@@ -6,7 +6,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
-import org.springframework.cache.annotation.EnableCaching;
 
 /**
  * 系统模块
@@ -16,7 +15,6 @@ import org.springframework.cache.annotation.EnableCaching;
 @EnableDubbo
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EsMapperScan("org.dromara.es.esmapper")
-@EnableCaching
 public class DragonESApplication {
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(DragonESApplication.class);
