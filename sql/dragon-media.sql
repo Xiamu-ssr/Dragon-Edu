@@ -1,58 +1,21 @@
-CREATE TABLE `mq_message`(
-    `id` VARCHAR(64) NOT NULL COMMENT '消息id',
-    `message_type` VARCHAR(32) NOT NULL COMMENT '消息类型代码',
-    `business_key1` VARCHAR(64) NULL COMMENT '关联业务信息',
-    `business_key2` VARCHAR(255) NULL COMMENT '关联业务信息',
-    `business_key3` VARCHAR(512) NULL COMMENT '关联业务信息',
-    `mq_host` VARCHAR(32) NOT NULL COMMENT '消息队列主机',
-    `mq_port` INT NOT NULL COMMENT '消息队列端口',
-    `mq_virtualhost` VARCHAR(32) NOT NULL COMMENT '消息队列虚拟主机',
-    `mq_queue` VARCHAR(32) NOT NULL COMMENT '队列名称',
-    `inform_num` INT UNSIGNED NOT NULL COMMENT '通知次数',
-    `state` CHAR(1) NOT NULL COMMENT '处理状态，0:初始，1:成功',
-    `returnfailure_date` DATETIME NULL COMMENT '回复失败时间',
-    `returnsuccess_date` DATETIME NULL COMMENT '回复成功时间',
-    `returnfailure_msg` VARCHAR(2048) NULL COMMENT '回复失败内容',
-    `inform_date` DATETIME NULL COMMENT '最近通知时间',
-    `stage_state1` CHAR(1) NULL COMMENT '阶段1处理状态, 0:初始，1:成功',
-    `stage_state2` CHAR(1) NULL COMMENT '阶段2处理状态, 0:初始，1:成功',
-    `stage_state3` CHAR(1) NULL COMMENT '阶段3处理状态, 0:初始，1:成功',
-    `stage_state4` CHAR(1) NULL COMMENT '阶段4处理状态, 0:初始，1:成功',
-    PRIMARY KEY(`id`)
+create table `dragon-media`.media_files
+(
+    id            varchar(64)       not null comment '文件id;如果是视频，则是md5值;如果是图片，则是md5+companyId'
+        primary key,
+    company_id    bigint            not null comment '机构ID',
+    original_name varchar(255)      not null comment '原名,只真正的原来的，文件名',
+    file_suffix   varchar(16)       not null comment '文件后缀',
+    size          bigint            null comment '文件大小单位byte',
+    path          varchar(255)      not null comment '在minio中的完整路径',
+    create_time   datetime          null comment '上传时间',
+    remark        varchar(32)       null comment '备注',
+    audit_status  tinyint default 1 not null comment '审核状态',
+    audit_mind    varchar(255)      null comment '审核意见'
 );
-CREATE TABLE `media_files`(
-    `id` VARCHAR(32) NOT NULL COMMENT '文件id,md5值',
-    `company_id` BIGINT NULL COMMENT '机构ID',
-    `filename` VARCHAR(255) NOT NULL COMMENT '文件名称',
-    `file_type` VARCHAR(12) NULL COMMENT '文件类型（图片、视频）',
-    `bucket` VARCHAR(128) NULL COMMENT '存储目录',
-    `file_path` VARCHAR(512) NULL COMMENT '存储路径',
-    `url` VARCHAR(1024) NULL COMMENT '媒资文件访问地址',
-    `create_date` DATETIME NULL COMMENT '上传时间',
-    `remark` VARCHAR(32) NULL COMMENT '备注',
-    `audit_status` VARCHAR(12) NULL COMMENT '审核状态',
-    `audit_mind` VARCHAR(255) NULL COMMENT '审核意见',
-    PRIMARY KEY(`id`)
-);
-CREATE TABLE `mq_message_history`(
-    `id` VARCHAR(64) NOT NULL COMMENT '消息id',
-    `message_type` VARCHAR(32) NOT NULL COMMENT '消息类型代码',
-    `business_key1` VARCHAR(64) NULL COMMENT '关联业务信息',
-    `business_key2` VARCHAR(255) NULL COMMENT '关联业务信息',
-    `business_key3` VARCHAR(512) NULL COMMENT '关联业务信息',
-    `mq_host` VARCHAR(32) NOT NULL COMMENT '消息队列主机',
-    `mq_port` INT NOT NULL COMMENT '消息队列端口',
-    `mq_virtualhost` VARCHAR(32) NOT NULL COMMENT '消息队列虚拟主机',
-    `mq_queue` VARCHAR(32) NOT NULL COMMENT '队列名称',
-    `inform_num` INT UNSIGNED NULL COMMENT '通知次数',
-    `state` INT UNSIGNED NULL COMMENT '处理状态，0:初始，1:成功，2:失败',
-    `returnfailure_date` DATETIME NULL COMMENT '回复失败时间',
-    `returnsuccess_date` DATETIME NULL COMMENT '回复成功时间',
-    `returnfailure_msg` VARCHAR(255) NULL COMMENT '回复失败内容',
-    `inform_date` DATETIME NULL COMMENT '最近通知时间',
-    `stage_state1` CHAR(1) NULL,
-    `stage_state2` CHAR(1) NULL,
-    `stage_state3` CHAR(1) NULL,
-    `stage_state4` CHAR(1) NULL,
-    PRIMARY KEY(`id`)
-);
+
+create index media_files_company_id_index
+    on `dragon-media`.media_files (company_id);
+
+create index media_files_file_suffix_index
+    on `dragon-media`.media_files (file_suffix);
+

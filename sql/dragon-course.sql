@@ -1,106 +1,127 @@
-CREATE TABLE `course_extra`(
-                               `id` BIGINT NOT NULL COMMENT '主键，课程id',
-                               `charge` VARCHAR(32) NOT NULL COMMENT '收费规则，对应数据字典',
-                               `price` DOUBLE(10, 2) NULL DEFAULT 0 COMMENT '现价',
-                               `original_price` DOUBLE(10, 2) NULL DEFAULT 0 COMMENT '原价',
-                               `teachers` VARCHAR(64) NOT NULL COMMENT '教师id列表，形如[1,2]',
-                               `email` VARCHAR(64) NOT NULL,
-                               `qq` VARCHAR(64) NOT NULL,
-                               `wechat` VARCHAR(64) NOT NULL,
-                               `phone` VARCHAR(64) NOT NULL,
-                               PRIMARY KEY(`id`)
+create table `dragon-course`.course_base
+(
+    id             bigint auto_increment comment '主键'
+        primary key,
+    company_id     bigint                      not null comment '机构ID',
+    name           varchar(100)                not null comment '课程名称',
+    mt             varchar(20)                 not null comment '大分类',
+    st             varchar(20)                 not null comment '小分类',
+    pic            varchar(500)                null comment '课程图片',
+    charge         tinyint(1)     default 0    not null comment '是否收费',
+    original_price decimal(10, 2) default 0.00 null comment '原价',
+    price          decimal(10, 2) default 0.00 null comment '现价',
+    star           decimal(2, 1)  default 5.0  null comment '评分',
+    status         tinyint        default 1    not null comment 'UNPUBLISHED(1, "未发布"),     UNDER_REVIEW(2, "审核中"),     REVIEW_FAILED(3, "审核不通过"),     REVIEW_PASSED(4, "审核通过")',
+    mind           varchar(255)                null comment '审核意见',
+    create_time    datetime                    null comment '创建时间',
+    update_time    datetime                    null comment '修改时间'
 );
-CREATE TABLE `teacher`(
-                          `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                          `name` VARCHAR(32) NOT NULL,
-                          `position` VARCHAR(64) NOT NULL,
-                          `introduction` VARCHAR(1024) NOT NULL,
-                          `photograph` VARCHAR(1024) NOT NULL
+
+create index course_base_company_id_index
+    on `dragon-course`.course_base (company_id);
+
+create table `dragon-course`.course_category
+(
+    id          bigint                  not null comment '主键'
+        primary key,
+    name        varchar(32)             not null comment '分类名称',
+    parentid    bigint       default 0  not null comment '父结点id（第一级的父节点是0，自关联字段id）',
+    orderby     int          default 0  not null comment '排序字段',
+    description varchar(255) default '' not null comment '描述',
+    is_leaf     tinyint(1)   default 0  not null comment '是否叶子'
 );
-CREATE TABLE `course_base`(
-                              `id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
-                              `company_id` BIGINT NOT NULL COMMENT '机构ID',
-                              `company_name` VARCHAR(255) NOT NULL COMMENT '机构名称',
-                              `name` VARCHAR(100) NOT NULL COMMENT '课程名称',
-                              `tags` VARCHAR(50) NOT NULL COMMENT '课程标签',
-                              `mt` VARCHAR(20) NOT NULL COMMENT '大分类',
-                              `st` VARCHAR(20) NOT NULL COMMENT '小分类',
-                              `description` TEXT NULL COMMENT '课程介绍',
-                              `pic` VARCHAR(500) NULL COMMENT '课程图片',
-                              `create_date` DATETIME NULL COMMENT '创建时间',
-                              `update_date` DATETIME NULL COMMENT '修改时间',
-                              `status` VARCHAR(10) NOT NULL DEFAULT '1' COMMENT '未发布,审核中,审核不通过,审核通过,已发布',
-                              `audit_mind` VARCHAR(255) NULL COMMENT '审核意见'
+
+create table `dragon-course`.course_extra
+(
+    id           bigint                  not null comment '主键，课程id'
+        primary key,
+    company_name varchar(128) default '' not null comment '机构名称',
+    tags         varchar(128) default '' not null comment '课程标签，用符号,分割',
+    description  text                    null comment '课程介绍',
+    teachers     varchar(64)             null comment '教师id列表，形如[''''1'''',''''2'''']',
+    email        varchar(64)             not null,
+    qq           varchar(64)             null,
+    wechat       varchar(64)             null,
+    phone        varchar(64)             null
 );
-CREATE TABLE `course_publish`(
-                                 `id` BIGINT NOT NULL COMMENT '主键',
-                                 `company_id` BIGINT NOT NULL COMMENT '机构ID',
-                                 `company_name` VARCHAR(255) NULL COMMENT '公司名称',
-                                 `name` VARCHAR(100) NOT NULL COMMENT '课程名称',
-                                 `tags` VARCHAR(32) NULL COMMENT '标签',
-                                 `mt` VARCHAR(20) NOT NULL COMMENT '大分类',
-                                 `mt_name` VARCHAR(255) NOT NULL COMMENT '大分类名称',
-                                 `st` VARCHAR(20) NOT NULL COMMENT '小分类',
-                                 `st_name` VARCHAR(255) NOT NULL COMMENT '小分类名称',
-                                 `pic` VARCHAR(500) NOT NULL COMMENT '课程图片',
-                                 `description` TEXT NULL COMMENT '课程介绍',
-                                 `extra` TEXT NULL COMMENT '课程额外信息，json格式',
-                                 `teachplan` TEXT NULL COMMENT '所有课程计划，json格式',
-                                 `teachers` TEXT NULL COMMENT '教师信息列表，json格式',
-                                 `update_date` DATETIME NULL COMMENT '发布时间',
-                                 PRIMARY KEY(`id`)
+
+create table `dragon-course`.course_publish
+(
+    id         bigint not null comment '主键-课程id'
+        primary key,
+    company_id bigint not null comment '机构ID',
+    info       text   not null comment '课程所有信息'
 );
-CREATE TABLE `teachplan`(
-                            `id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                            `pname` VARCHAR(64) NOT NULL COMMENT '课程计划名称',
-                            `parentid` BIGINT NOT NULL COMMENT '课程计划父级Id',
-                            `grade` SMALLINT NOT NULL COMMENT '层级，分为1、2级',
-                            `description` VARCHAR(500) NULL COMMENT '章节及课程时介绍',
-                            `orderby` INT NOT NULL DEFAULT 0 COMMENT '排序字段',
-                            `course_id` BIGINT NOT NULL COMMENT '课程标识',
-                            `teachplan_id` BIGINT NULL COMMENT '媒资id',
-                            `is_preview` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否支持试学或预览（试看）'
+
+create table `dragon-course`.mq_message
+(
+    id                 bigint auto_increment comment '消息id'
+        primary key,
+    message_type       varchar(32)              not null comment '消息类型代码: course_publish ,  media_test',
+    business_key1      varchar(64)              null comment '关联业务信息',
+    business_key2      varchar(255)             null comment '关联业务信息',
+    business_key3      varchar(512)             null comment '关联业务信息',
+    execute_num        int unsigned default '0' not null comment '通知次数',
+    state              char         default '0' not null comment '处理状态，0:初始，1:成功',
+    returnfailure_date datetime                 null comment '回复失败时间',
+    returnsuccess_date datetime                 null comment '回复成功时间',
+    returnfailure_msg  varchar(2048)            null comment '回复失败内容',
+    execute_date       datetime                 null comment '最近通知时间',
+    stage_state1       char         default '0' not null comment '阶段1处理状态, 0:初始，1:成功',
+    stage_state2       char         default '0' not null comment '阶段2处理状态, 0:初始，1:成功',
+    stage_state3       char         default '0' not null comment '阶段3处理状态, 0:初始，1:成功',
+    stage_state4       char         default '0' not null comment '阶段4处理状态, 0:初始，1:成功'
 );
-CREATE TABLE `mq_message_history`(
-                                     `id` BIGINT NOT NULL COMMENT '消息id',
-                                     `message_type` VARCHAR(32) NOT NULL COMMENT '消息类型代码',
-                                     `business_key1` VARCHAR(64) NULL COMMENT '关联业务信息',
-                                     `business_key2` VARCHAR(255) NULL COMMENT '关联业务信息',
-                                     `business_key3` VARCHAR(512) NULL COMMENT '关联业务信息',
-                                     `execute_num` INT UNSIGNED NULL COMMENT '通知次数',
-                                     `state` INT UNSIGNED NULL COMMENT '处理状态，0:初始，1:成功，2:失败',
-                                     `returnfailure_date` DATETIME NULL COMMENT '回复失败时间',
-                                     `returnsuccess_date` DATETIME NULL COMMENT '回复成功时间',
-                                     `returnfailure_msg` VARCHAR(255) NULL COMMENT '回复失败内容',
-                                     `execute_date` DATETIME NULL COMMENT '最近通知时间',
-                                     `stage_state1` CHAR(1) NULL,
-                                     `stage_state2` CHAR(1) NULL,
-                                     `stage_state3` CHAR(1) NULL,
-                                     `stage_state4` CHAR(1) NULL,
-                                     PRIMARY KEY(`id`)
+
+create table `dragon-course`.mq_message_history
+(
+    id                 bigint       not null comment '消息id'
+        primary key,
+    message_type       varchar(32)  not null comment '消息类型代码',
+    business_key1      varchar(64)  null comment '关联业务信息',
+    business_key2      varchar(255) null comment '关联业务信息',
+    business_key3      varchar(512) null comment '关联业务信息',
+    execute_num        int unsigned null comment '通知次数',
+    state              int unsigned null comment '处理状态，0:初始，1:成功，2:失败',
+    returnfailure_date datetime     null comment '回复失败时间',
+    returnsuccess_date datetime     null comment '回复成功时间',
+    returnfailure_msg  varchar(255) null comment '回复失败内容',
+    execute_date       datetime     null comment '最近通知时间',
+    stage_state1       char         null,
+    stage_state2       char         null,
+    stage_state3       char         null,
+    stage_state4       char         null
 );
-CREATE TABLE `mq_message`(
-                             `id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '消息id',
-                             `message_type` VARCHAR(32) NOT NULL COMMENT '消息类型代码: course_publish ,  media_test',
-                             `business_key1` VARCHAR(64) NULL COMMENT '关联业务信息',
-                             `business_key2` VARCHAR(255) NULL COMMENT '关联业务信息',
-                             `business_key3` VARCHAR(512) NULL COMMENT '关联业务信息',
-                             `execute_num` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '通知次数',
-                             `state` CHAR(1) NOT NULL DEFAULT 0 COMMENT '处理状态，0:初始，1:成功',
-                             `returnfailure_date` DATETIME NULL COMMENT '回复失败时间',
-                             `returnsuccess_date` DATETIME NULL COMMENT '回复成功时间',
-                             `returnfailure_msg` VARCHAR(2048) NULL COMMENT '回复失败内容',
-                             `execute_date` DATETIME NULL COMMENT '最近通知时间',
-                             `stage_state1` CHAR(1) NOT NULL DEFAULT 0 COMMENT '阶段1处理状态, 0:初始，1:成功',
-                             `stage_state2` CHAR(1) NOT NULL DEFAULT 0 COMMENT '阶段2处理状态, 0:初始，1:成功',
-                             `stage_state3` CHAR(1) NOT NULL DEFAULT 0 COMMENT '阶段3处理状态, 0:初始，1:成功',
-                             `stage_state4` CHAR(1) NOT NULL DEFAULT 0 COMMENT '阶段4处理状态, 0:初始，1:成功'
+
+create table `dragon-course`.teacher
+(
+    id           bigint unsigned auto_increment comment '教师ID'
+        primary key,
+    company_id   bigint        not null comment '所属机构id',
+    name         varchar(32)   not null comment '教师姓名',
+    position     varchar(64)   not null comment '教师职位',
+    introduction varchar(1024) not null comment '教师介绍',
+    photograph   varchar(1024) not null comment '教师头像'
 );
-CREATE TABLE `course_category`(
-                                  `id` VARCHAR(20) NOT NULL COMMENT '主键',
-                                  `name` VARCHAR(32) NOT NULL COMMENT '分类名称',
-                                  `parentid` VARCHAR(20) NOT NULL DEFAULT '0' COMMENT '父结点id（第一级的父节点是0，自关联字段id）',
-                                  `orderby` INT NOT NULL DEFAULT 0 COMMENT '排序字段',
-                                  `is_leaf` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否叶子',
-                                  PRIMARY KEY(`id`)
+
+create index teacher_company_id_index
+    on `dragon-course`.teacher (company_id);
+
+create table `dragon-course`.teachplan
+(
+    id          varchar(36)             not null comment 'UUID'
+        primary key,
+    pname       varchar(64)             not null comment '课程计划名称',
+    parentid    varchar(36)             null comment '课程计划父级Id，大章节写"0"',
+    grade       smallint                not null comment '层级，分为1、2级',
+    orderby     int          default 0  not null comment '排序字段',
+    course_id   bigint                  not null comment '课程标识',
+    media_id    varchar(64)  default '' not null comment '媒资id',
+    media_name  varchar(255) default '' not null comment '媒资名称',
+    is_preview  tinyint(1)   default 0  not null comment '是否支持试学或预览（试看）',
+    description varchar(500)            null comment '章节及课程时介绍'
 );
+
+create index teachplan_course_id_index
+    on `dragon-course`.teachplan (course_id);
+

@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="ruoyi-system" type="docker-deploy" factoryName="dockerfile" server-name="虚拟机Docker">
+  <configuration default="false" name="ruoyi-system" type="docker-deploy" factoryName="dockerfile" folderName="打包到虚拟机" server-name="虚拟机Docker">
     <deployment type="dockerfile">
       <settings>
         <option name="imageTag" value="ruoyi/ruoyi-system:2.1.2" />

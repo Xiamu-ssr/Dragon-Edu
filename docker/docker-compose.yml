@@ -1,5 +1,9 @@
 version: '3'
 
+networks:
+  default:
+    driver: bridge
+
 services:
   mysql:
     image: mysql:8.0.31
@@ -11,9 +15,8 @@ services:
       MYSQL_ROOT_PASSWORD: ruoyi123
       # 初始化数据库
       MYSQL_DATABASE: ry-cloud
-    ports:
-      - "3306:3306"
-      - "3306:3306"
+    #    ports:
+    #      - "3306:3306"
     volumes:
       # 数据挂载
       - /docker/mysql/data/:/var/lib/mysql/
@@ -32,10 +35,10 @@ services:
   nacos:
     image: ruoyi/ruoyi-nacos:2.1.2
     container_name: nacos
-    ports:
-      - "8848:8848"
-      - "9848:9848"
-      - "9849:9849"
+    #    ports:
+    #      - "8848:8848"
+    #      - "9848:9848"
+    #      - "9849:9849"
     environment:
       TZ: Asia/Shanghai
       JAVA_OPTS: "-Xms256m -Xmx512m"
@@ -49,8 +52,8 @@ services:
   redis:
     image: redis:6.2.7
     container_name: redis
-    ports:
-      - "6379:6379"
+    #    ports:
+    #      - "6379:6379"
     environment:
       # 时区上海
       TZ: Asia/Shanghai
@@ -66,11 +69,11 @@ services:
   minio:
     image: minio/minio:RELEASE.2023-03-24T21-41-23Z
     container_name: minio
-    ports:
-      # api 端口
-      - "9000:9000"
-      # 控制台端口
-      - "9001:9001"
+    #    ports:
+    #      # api 端口
+    #      - "9000:9000"
+    #      # 控制台端口
+    #      - "9001:9001"
     environment:
       # 时区上海
       TZ: Asia/Shanghai
@@ -99,13 +102,13 @@ services:
   seata-server:
     image: ruoyi/ruoyi-seata-server:2.1.2
     container_name: seata-server
-    ports:
-      - "7091:7091"
-      - "8091:8091"
+    #    ports:
+    #      - "7091:7091"
+    #      - "8091:8091"
     environment:
       TZ: Asia/Shanghai
       # 注意 此处ip如果是外网使用 要改为外网ip
-      # SEATA_IP: 127.0.0.1
+      SEATA_IP: 127.0.0.1
       SEATA_PORT: 8091
     volumes:
       - /docker/ruoyi-seata-server/logs/:/ruoyi/seata-server/logs
@@ -120,9 +123,9 @@ services:
     environment:
       # 时区上海
       TZ: Asia/Shanghai
-    ports:
-      - "80:80"
-      - "443:443"
+    #    ports:
+    #      - "80:80"
+    #      - "443:443"
     volumes:
       # 证书映射
       - /docker/nginx/cert:/etc/nginx/cert
@@ -140,8 +143,8 @@ services:
     container_name: sentinel
     environment:
       TZ: Asia/Shanghai
-    ports:
-      - "8718:8718"
+    #    ports:
+    #      - "8718:8718"
     volumes:
       # 配置文件
       - /docker/ruoyi-sentinel-dashboard/logs/:/ruoyi/sentinel-dashboard/logs
@@ -156,8 +159,8 @@ services:
     environment:
       # 时区上海
       TZ: Asia/Shanghai
-    ports:
-      - "9100:9100"
+    #    ports:
+    #      - "9100:9100"
     volumes:
       # 配置文件
       - /docker/ruoyi-monitor/logs/:/ruoyi/monitor/logs
@@ -172,10 +175,10 @@ services:
     environment:
       # 时区上海
       TZ: Asia/Shanghai
-    ports:
-      - "7700:7700"
-      - "10086:10086"
-      - "10010:10010"
+    #    ports:
+    #      - "7700:7700"
+    #      - "10086:10086"
+    #      - "10010:10010"
     volumes:
       - /docker/powerjob/logs/:/ruoyi/powerjob/logs
     privileged: true
@@ -187,8 +190,8 @@ services:
     environment:
       # 时区上海
       TZ: Asia/Shanghai
-    ports:
-      - "8080:8080"
+    #    ports:
+    #      - "8080:8080"
     volumes:
       # 配置文件
       - /docker/ruoyi-gateway/logs/:/ruoyi/gateway/logs
@@ -203,8 +206,8 @@ services:
     environment:
       # 时区上海
       TZ: Asia/Shanghai
-    ports:
-      - "9210:9210"
+    #    ports:
+    #      - "9210:9210"
     volumes:
       # 配置文件
       - /docker/ruoyi-auth/logs/:/ruoyi/auth/logs
@@ -219,8 +222,8 @@ services:
     environment:
       # 时区上海
       TZ: Asia/Shanghai
-    ports:
-      - "9201:9201"
+    #    ports:
+    #      - "9201:9201"
     volumes:
       # 配置文件
       - /docker/ruoyi-system/logs/:/ruoyi/system/logs
@@ -235,8 +238,8 @@ services:
     environment:
       # 时区上海
       TZ: Asia/Shanghai
-    ports:
-      - "9202:9202"
+    #    ports:
+    #      - "9202:9202"
     volumes:
       # 配置文件
       - /docker/ruoyi-gen/logs/:/ruoyi/gen/logs
@@ -251,8 +254,8 @@ services:
     environment:
       # 时区上海
       TZ: Asia/Shanghai
-    ports:
-      - "9203:9203"
+    #    ports:
+    #      - "9203:9203"
     volumes:
       # 配置文件
       - /docker/ruoyi-job/logs/:/ruoyi/job/logs
@@ -267,8 +270,8 @@ services:
     environment:
       # 时区上海
       TZ: Asia/Shanghai
-    ports:
-      - "9204:9204"
+    #    ports:
+    #      - "9204:9204"
     volumes:
       # 配置文件
       - /docker/ruoyi-resource/logs/:/ruoyi/resource/logs
@@ -277,17 +280,149 @@ services:
     privileged: true
     network_mode: "host"
 
+  #################################################################################################
+  #################################### 以下为自定义微服务 #########################################
+  #################################################################################################
+  dragon-course:
+    image: dragon/dragon-course:1.0
+    container_name: dragon-course
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+    #    ports:
+    #      - "9301:9301"
+    volumes:
+      # 配置文件
+      - /docker/dragon-course/logs/:/dragon/course/logs
+      # skywalking 探针
+      - /docker/skywalking/agent/:/dragon/skywalking/agent
+    privileged: true
+    network_mode: "host"
 
-#################################################################################################
-#################################### 以下为扩展根据需求搭建 #########################################
-#################################################################################################
+  dragon-media:
+    image: dragon/dragon-media:1.0
+    container_name: dragon-media
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+    #    ports:
+    #      - "9311:9311"
+    volumes:
+      # 配置文件
+      - /docker/dragon-media/logs/:/dragon/media/logs
+      # skywalking 探针
+      - /docker/skywalking/agent/:/dragon/skywalking/agent
+    privileged: true
+    network_mode: "host"
+
+  dragon-es:
+    image: dragon/dragon-es:1.0
+    container_name: dragon-es
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+    #    ports:
+    #      - "9321:9321"
+    volumes:
+      # 配置文件
+      - /docker/dragon-es/logs/:/dragon/es/logs
+      # skywalking 探针
+      - /docker/skywalking/agent/:/dragon/skywalking/agent
+    privileged: true
+    network_mode: "host"
+
+  dragon-es-02:
+    image: dragon/dragon-es:1.0
+    container_name: dragon-es-02
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+      SERVER_PORT: 9322
+    #    ports:
+    #      - "9321:9321"
+    volumes:
+      # 配置文件
+      - /docker/dragon-es-02/logs/:/dragon/es/logs
+      # skywalking 探针
+      - /docker/skywalking/agent/:/dragon/skywalking/agent
+    privileged: true
+    network_mode: "host"
+
+  dragon-es-03:
+    image: dragon/dragon-es:1.0
+    container_name: dragon-es-03
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+      SERVER_PORT: 9323
+    #    ports:
+    #      - "9321:9321"
+    volumes:
+      # 配置文件
+      - /docker/dragon-es-03/logs/:/dragon/es/logs
+      # skywalking 探针
+      - /docker/skywalking/agent/:/dragon/skywalking/agent
+    privileged: true
+    network_mode: "host"
+
+  dragon-order:
+    image: dragon/dragon-order:1.0
+    container_name: dragon-order
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+    #    ports:
+    #      - "9331:9331"
+    volumes:
+      # 配置文件
+      - /docker/dragon-order/logs/:/dragon/order/logs
+      # skywalking 探针
+      - /docker/skywalking/agent/:/dragon/skywalking/agent
+    privileged: true
+    network_mode: "host"
+
+  dragon-learn:
+    image: dragon/dragon-learn:1.0
+    container_name: dragon-learn
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+    #    ports:
+    #      - "9341:9341"
+    volumes:
+      # 配置文件
+      - /docker/dragon-learn/logs/:/dragon/learn/logs
+      # skywalking 探针
+      - /docker/skywalking/agent/:/dragon/skywalking/agent
+    privileged: true
+    network_mode: "host"
+
+  dragon-discuss:
+    image: dragon/dragon-discuss:1.0
+    container_name: dragon-discuss
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+    #    ports:
+    #      - "9351:9351"
+    volumes:
+      # 配置文件
+      - /docker/dragon-discuss/logs/:/dragon/discuss/logs
+      # skywalking 探针
+      - /docker/skywalking/agent/:/dragon/skywalking/agent
+    privileged: true
+    network_mode: "host"
+
+  #################################################################################################
+  #################################### 以下为扩展根据需求搭建 #########################################
+  #################################################################################################
 
   elasticsearch:
     image: elasticsearch:7.17.6
     container_name: elasticsearch
-    ports:
-      - "9200:9200"
-      - "9300:9300"
+    #    ports:
+    #      - "9200:9200"
+    #      - "9300:9300"
     environment:
       # 设置集群名称
       cluster.name: elasticsearch
@@ -303,8 +438,8 @@ services:
   kibana:
     image: kibana:7.17.6
     container_name: kibana
-    ports:
-      - "5601:5601"
+    #    ports:
+    #      - "5601:5601"
     depends_on:
       # kibana在elasticsearch启动之后再启动
       - elasticsearch
@@ -320,8 +455,8 @@ services:
   logstash:
     image: logstash:7.17.6
     container_name: logstash
-    ports:
-      - "4560:4560"
+    #    ports:
+    #      - "4560:4560"
     volumes:
       - /docker/elk/logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
       - /docker/elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
@@ -378,9 +513,9 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ruoyi
       RABBITMQ_DEFAULT_PASS: ruoyi123
-    ports:
-      - "15672:15672" # 管理界面端口
-      - "5672:5672"   # api 端口
+    #    ports:
+    #      - "15672:15672" # 管理界面端口
+    #      - "5672:5672"   # api 端口
     volumes:
       - /docker/rabbitmq/log:/var/log/rabbitmq
       - /docker/rabbitmq/data:/var/lib/rabbitmq
