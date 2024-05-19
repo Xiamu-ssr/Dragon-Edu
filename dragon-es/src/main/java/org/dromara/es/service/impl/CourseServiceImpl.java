@@ -1,6 +1,7 @@
 package org.dromara.es.service.impl;
 
 import com.alibaba.fastjson2.JSON;
+import com.github.benmanes.caffeine.cache.Cache;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.constant.CacheNames;
 import org.dromara.common.core.utils.StringUtils;
@@ -20,6 +21,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -77,12 +79,14 @@ public class CourseServiceImpl implements CourseService {
         String key = CacheNames.HOMEPAGE_FIRST_HOT;
         String cachedValue = RedisUtils.getCacheObject(key);
         if (cachedValue == null){
+            //log.info("使用es并存入redis");
             EsPageInfo<CourseBase> pageInfo = pageList(bo, bo.getPageNum(), bo.getPageSize());
             String string = JSON.toJSONString(pageInfo);
             RedisUtils.setCacheObject(key, string);
-            RedisUtils.expire(key, Duration.ofHours(2).getSeconds());
+            RedisUtils.expire(key, Duration.ofMinutes(15).getSeconds());
             return pageInfo;
         }else {
+            //log.info("使用redis");
             // 从缓存的 JSON 字符串转换为对象
             EsPageInfo<CourseBase> pageInfo = JSON.parseObject(cachedValue, EsPageInfo.class);
             return pageInfo;

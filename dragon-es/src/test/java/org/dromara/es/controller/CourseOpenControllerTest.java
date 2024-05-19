@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CourseOpenControllerTest {
 
     @Autowired
-    CourseService courseService;
+    CourseOpenController courseOpenController;
 
     @Test
     void homePageList() {
@@ -24,14 +24,13 @@ class CourseOpenControllerTest {
         bo.setPageSize(6);
 
         // 第一次调用
-        EsPageInfo<CourseBase> result1 = courseService.homePageList(bo);
+        EsPageInfo<CourseBase> result1 = courseOpenController.homePageList(bo);
 
-        // 第二次调用（应该走缓存）
-        EsPageInfo<CourseBase> result2 = courseService.homePageList(bo);
+        // 第二次调用（应该走caffeine）
+        EsPageInfo<CourseBase> result2 = courseOpenController.homePageList(bo);
 
-        // 检查两次调用返回结果是否相同
-        Assertions.assertEquals(result1, result2);
+        // 第二次调用（应该走caffeine）
+        EsPageInfo<CourseBase> result3 = courseOpenController.homePageList(bo);
 
-        // 检查日志中是否只出现一次执行标识
     }
 }

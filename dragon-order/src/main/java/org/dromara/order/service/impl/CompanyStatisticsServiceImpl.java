@@ -148,7 +148,7 @@ public class CompanyStatisticsServiceImpl implements CompanyStatisticsService {
             TotalStatisticsVo totalData = getTotalData(companyId);
             String string = JSON.toJSONString(totalData);
             RedisUtils.setCacheObject(key, string);
-            RedisUtils.expire(key, Duration.ofHours(1).getSeconds());
+            RedisUtils.expire(key, Duration.ofMinutes(10).getSeconds());
             return totalData;
         }else {
             return JSON.parseObject(cachedValue, TotalStatisticsVo.class);

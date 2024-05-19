@@ -1,6 +1,8 @@
 package org.dromara.es.controller;
 
 
+import com.github.benmanes.caffeine.cache.Cache;
+import org.dromara.common.core.constant.CacheNames;
 import org.dromara.easyes.core.biz.EsPageInfo;
 import org.dromara.es.domain.CourseBase;
 import org.dromara.es.domain.bo.CourseQueryBo;
@@ -20,6 +22,9 @@ import org.springframework.web.bind.annotation.*;
 public class CourseOpenController {
     @Autowired
     private CourseService courseService;
+
+    @Autowired
+    private Cache<String, EsPageInfo<CourseBase>> caffeineCache;
 
     /**
      * 分页查询
@@ -45,7 +50,10 @@ public class CourseOpenController {
     public EsPageInfo<CourseBase> homePageList(
         @RequestBody CourseQueryBo bo
     ) {
-        return courseService.homePageList(bo);
+        return caffeineCache.get(
+            CacheNames.HOMEPAGE_FIRST_HOT,
+            key->courseService.homePageList(bo)
+        );
     }
 
 

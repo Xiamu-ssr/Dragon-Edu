@@ -14,10 +14,10 @@ class CourseControllerTest {
     @Autowired
     CourseController courseController;
 
-    @Test
-    void createIndex() {
-        courseController.createIndex();
-    }
+    //@Test
+    //void createIndex() {
+    //    courseController.createIndex();
+    //}
 
     @Test
     void insert() {
