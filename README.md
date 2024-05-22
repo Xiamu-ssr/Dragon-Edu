@@ -4,6 +4,8 @@
 
 #### 本科毕设：基于主流微服务技术栈的在线教育系统的设计与实现
 
+前端仓库：https://github.com/Xiamu-ssr/Dragon-Edu-Vue3
+
 感谢来自“疯狂的狮子”开源精神，RuoYi 微服务Plus版本：
 
 <img src="https://foruda.gitee.com/images/1679673780944866919/d908a86f_1766278.png" width="56%" height="56%">
@@ -12,7 +14,7 @@
 > 文档地址: [plus-doc](https://plus-doc.dromara.org)
 
 ## 参考教程
-b站-木子dn
+[b站-木子dn](https://www.bilibili.com/video/BV1GM4m1k7uN)
 
 ## 软件架构图
 ![图3-1](https://github.com/Xiamu-ssr/Dragon-Edu/assets/77220168/4f990e2d-4b91-4ede-8f3e-0ea36292db5a)
